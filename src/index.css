@@ -12,6 +12,10 @@
   --pixel-secondary: #f97316;
   --pixel-text: #f8fafc;
   --pixel-text-muted: #94a3b8;
+
+  /* Legacy color variable names for backward compatibility */
+  --color-primary: #14b8a6;
+  --color-secondary: #f97316;
 }
 
 body {
