@@ -1,12 +1,15 @@
 use crate::models::FocusSession;
 use chrono::{Utc, Duration};
+use serde::{Serialize, Deserialize};
 
+#[derive(Debug, Serialize, Deserialize)]
 pub struct DailyStats {
     pub date: String,
     pub total_minutes: i32,
     pub count: i32,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
 pub struct TagStats {
     pub tag: String,
     pub total_minutes: i32,

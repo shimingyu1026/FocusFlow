@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 pub fn play_sound(sound_path: &PathBuf) -> Result<(), String> {
     if !sound_path.exists() {
-        return format!("Sound file not found: {:?}", sound_path);
+        return Err(format!("Sound file not found: {:?}", sound_path));
     }
 
     #[cfg(target_os = "macos")]

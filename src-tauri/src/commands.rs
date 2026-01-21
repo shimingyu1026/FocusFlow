@@ -12,7 +12,7 @@ pub async fn start_session(
     state: State<'_, TimerState>,
     duration: i32,
     task: String,
-    app_handle: tauri::AppHandle,
+    _app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
     start_timer(&state, duration, task);
     Ok(())

@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+defineProps<{
   isRunning: boolean
   remainingSeconds: number
 }>()
