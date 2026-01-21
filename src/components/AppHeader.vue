@@ -1,6 +1,6 @@
 <template>
-  <header class="h-16 pixel-border border-b-4 border-pixel-green flex items-center justify-center bg-pixel-bg">
-    <h1 class="text-2xl text-pixel-green font-pixel">FOCUS FLOW</h1>
+  <header class="h-16 border-b-4 flex items-center justify-center" style="background-color: var(--pixel-bg); border-color: var(--pixel-primary);">
+    <h1 class="text-2xl font-pixel" style="color: var(--pixel-primary);">FOCUS FLOW</h1>
   </header>
 </template>
 
