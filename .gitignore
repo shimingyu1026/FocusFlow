@@ -1,0 +1,12 @@
+node_modules
+dist
+dist-electron
+.DS_Store
+*.log
+.vscode
+.idea
+*.db
+*.db-shm
+*.db-wal
+target
+src-tauri/target
