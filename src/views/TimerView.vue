@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { invoke } from '@tauri-apps/api/core'
 import { useTimerStore } from '@/stores/timer'
 import { useSettingsStore } from '@/stores/settings'
@@ -84,19 +84,48 @@ async function handleStop(completed: boolean) {
 }
 
 function startTimer() {
+  const endTime = Date.now() + remainingSeconds.value * 1000
+
   timerInterval = setInterval(() => {
-    if (remainingSeconds.value > 0) {
-      remainingSeconds.value--
-    } else {
-      // Timer finished
+    const now = Date.now()
+    const diff = Math.max(0, endTime - now)
+    remainingSeconds.value = Math.floor(diff / 1000)
+
+    if (diff <= 0) {
       handleStop(true)
     }
-  }, 1000) as unknown as number
+  }, 100) as unknown as number
 }
+
+// Keyboard shortcuts
+function handleKeyPress(event: KeyboardEvent) {
+  // Space: Start/Pause/Resume
+  if (event.code === 'Space' && !event.repeat) {
+    event.preventDefault()
+    if (!isRunning.value && remainingSeconds.value === 0) {
+      handleStart()
+    } else if (isRunning.value) {
+      handlePause()
+    } else if (remainingSeconds.value > 0) {
+      handleResume()
+    }
+  }
+
+  // Escape: Stop
+  if (event.code === 'Escape' && remainingSeconds.value > 0) {
+    event.preventDefault()
+    handleStop(false)
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyPress)
+})
 
 onUnmounted(() => {
   if (timerInterval) {
     clearInterval(timerInterval)
   }
+  window.removeEventListener('keydown', handleKeyPress)
 })
 </script>
