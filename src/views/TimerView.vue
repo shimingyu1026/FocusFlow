@@ -3,6 +3,7 @@
     <TimerDisplay
       :is-running="isRunning"
       :remaining-seconds="remainingSeconds"
+      :total-seconds="selectedDuration * 60"
       @update:task="handleTaskUpdate"
       @select-duration="handleDurationSelect"
     />
