@@ -82,11 +82,13 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   isRunning: boolean
   remainingSeconds: number
-  totalSeconds: number
-}>()
+  totalSeconds?: number
+}>(), {
+  totalSeconds: 0
+})
 
 const emit = defineEmits<{
   'update:task': [task: string]
@@ -100,7 +102,9 @@ const selectedDuration = ref(25)
 const progressCircumference = 2 * Math.PI * 144 // ≈ 904.78
 
 const progressOffset = computed(() => {
-  if (props.totalSeconds === 0) return 0
+  if (!props.totalSeconds || props.totalSeconds === 0) {
+    return 0
+  }
   const progress = props.remainingSeconds / props.totalSeconds
   return progressCircumference * (1 - progress)
 })
@@ -251,13 +255,7 @@ function selectDuration(duration: number) {
 }
 
 /* Responsive breakpoints */
-@media (max-height: 700px) {
-  .timer-scale-wrapper {
-    transform: scale(0.85);
-  }
-}
-
-@media (max-height: 450px) {
+@media (max-width: 450px) {
   .timer-scale-wrapper {
     transform: scale(0.75);
   }
