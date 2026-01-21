@@ -1,9 +1,98 @@
 <template>
-  <div class="h-full flex items-center justify-center">
-    <p class="text-pixel-green font-pixel">计时器页面</p>
+  <div class="h-full flex flex-col items-center justify-center gap-12 p-8">
+    <TimerDisplay
+      :is-running="isRunning"
+      :remaining-seconds="remainingSeconds"
+      @update:task="handleTaskUpdate"
+      @select-duration="handleDurationSelect"
+    />
+
+    <TimerControls
+      :is-running="isRunning"
+      :remaining-seconds="remainingSeconds"
+      @start="handleStart"
+      @pause="handlePause"
+      @resume="handleResume"
+      @stop="handleStop"
+    />
+
+    <!-- Focus tip -->
+    <div v-if="isRunning" class="pixel-border p-4 bg-pixel-bg max-w-md text-center">
+      <p class="text-sm font-pixel text-pixel-green">💪 保持专注，你可以的！</p>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// Timer view
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useTimerStore } from '@/stores/timer'
+import TimerDisplay from '@/components/TimerDisplay.vue'
+import TimerControls from '@/components/TimerControls.vue'
+
+const timerStore = useTimerStore()
+const isRunning = ref(false)
+const remainingSeconds = ref(0)
+const selectedDuration = ref(25)
+let timerInterval: number | null = null
+
+function handleTaskUpdate(task: string) {
+  // Save task description
+}
+
+function handleDurationSelect(duration: number) {
+  selectedDuration.value = duration
+}
+
+async function handleStart() {
+  await timerStore.startSession(selectedDuration.value, '')
+  isRunning.value = true
+  remainingSeconds.value = selectedDuration.value * 60
+  startTimer()
+}
+
+async function handlePause() {
+  await timerStore.pauseSession()
+  isRunning.value = false
+  if (timerInterval) {
+    clearInterval(timerInterval)
+    timerInterval = null
+  }
+}
+
+async function handleResume() {
+  await timerStore.resumeSession()
+  isRunning.value = true
+  startTimer()
+}
+
+async function handleStop(completed: boolean) {
+  await timerStore.stopSession(completed)
+  isRunning.value = false
+  remainingSeconds.value = 0
+  if (timerInterval) {
+    clearInterval(timerInterval)
+    timerInterval = null
+  }
+
+  if (completed) {
+    alert('🎉 恭喜！完成了一次专注！')
+  }
+}
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    if (remainingSeconds.value > 0) {
+      remainingSeconds.value--
+    } else {
+      // Timer finished
+      handleStop(true)
+    }
+  }, 1000) as unknown as number
+}
+
+onUnmounted(() => {
+  if (timerInterval) {
+    clearInterval(timerInterval)
+  }
+})
 </script>
