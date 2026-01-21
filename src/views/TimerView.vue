@@ -24,12 +24,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onUnmounted } from 'vue'
+import { invoke } from '@tauri-apps/api/core'
 import { useTimerStore } from '@/stores/timer'
+import { useSettingsStore } from '@/stores/settings'
 import TimerDisplay from '@/components/TimerDisplay.vue'
 import TimerControls from '@/components/TimerControls.vue'
 
 const timerStore = useTimerStore()
+const settingsStore = useSettingsStore()
 const isRunning = ref(false)
 const remainingSeconds = ref(0)
 const selectedDuration = ref(25)
@@ -74,7 +77,8 @@ async function handleStop(completed: boolean) {
     timerInterval = null
   }
 
-  if (completed) {
+  if (completed && settingsStore.soundEnabled) {
+    await invoke('play_completion_sound')
     alert('🎉 恭喜！完成了一次专注！')
   }
 }
