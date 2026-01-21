@@ -1,19 +1,19 @@
 <template>
-  <div class="pixel-border p-4 bg-pixel-bg mb-4">
+  <div class="pixel-border p-4 mb-4" style="background-color: var(--pixel-bg);">
     <div class="flex justify-between items-start gap-4">
       <div class="flex-1">
-        <h3 class="font-pixel text-pixel-green text-sm mb-2">{{ session.task || '未命名任务' }}</h3>
-        <div class="flex gap-4 text-xs font-pixel text-gray-400">
+        <h3 class="text-sm mb-2" style="color: var(--pixel-primary);">{{ session.task || '未命名任务' }}</h3>
+        <div class="flex gap-4 text-xs" style="color: var(--pixel-text-muted);">
           <span>{{ formatDate(session.startTime) }}</span>
           <span>{{ session.duration }}分钟</span>
-          <span v-if="session.completed" class="text-pixel-green">✓ 完成</span>
-          <span v-else class="text-pixel-pink">✗ 中断</span>
+          <span v-if="session.completed" style="color: var(--pixel-primary);">✓ 完成</span>
+          <span v-else style="color: var(--pixel-secondary);">✗ 中断</span>
         </div>
         <div v-if="session.tags.length > 0" class="flex gap-2 mt-2">
           <span
             v-for="tag in session.tags"
             :key="tag"
-            class="text-xs px-2 py-1 pixel-border border-pixel-purple text-pixel-purple"
+            class="text-xs px-2 py-1 tag-badge"
           >
             {{ tag }}
           </span>
@@ -21,7 +21,8 @@
       </div>
       <button
         @click="handleDelete"
-        class="pixel-button text-pixel-pink hover:text-red-500 text-lg"
+        class="pixel-button text-lg"
+        style="color: var(--pixel-secondary);"
       >
         🗑️
       </button>
@@ -55,3 +56,11 @@ function handleDelete() {
   }
 }
 </script>
+
+<style scoped>
+.tag-badge {
+  border: 2px solid var(--pixel-secondary);
+  border-radius: 4px;
+  color: var(--pixel-secondary);
+}
+</style>

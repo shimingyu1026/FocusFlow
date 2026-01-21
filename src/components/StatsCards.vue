@@ -1,27 +1,27 @@
 <template>
   <div class="grid grid-cols-2 gap-4 mb-6">
-    <div class="pixel-border p-4 bg-pixel-bg">
-      <p class="text-xs font-pixel text-gray-400 mb-2">今日专注</p>
-      <p class="text-2xl font-pixel text-pixel-green">{{ formatMinutes(todayTotal) }}</p>
-      <p class="text-xs font-pixel text-gray-500 mt-1">{{ todayCount }}次</p>
+    <div class="pixel-border p-4" style="background-color: var(--pixel-bg);">
+      <p class="text-xs mb-2" style="color: var(--pixel-text-muted);">今日专注</p>
+      <p class="text-2xl" style="color: var(--pixel-primary);">{{ formatMinutes(todayTotal) }}</p>
+      <p class="text-xs mt-1" style="color: var(--pixel-text-muted);">{{ todayCount }}次</p>
     </div>
 
-    <div class="pixel-border p-4 bg-pixel-bg">
-      <p class="text-xs font-pixel text-gray-400 mb-2">本周专注</p>
-      <p class="text-2xl font-pixel text-pixel-blue">{{ formatMinutes(weekTotal) }}</p>
-      <p class="text-xs font-pixel text-gray-500 mt-1">日均 {{ formatMinutes(Math.round(weekTotal / 7)) }}</p>
+    <div class="pixel-border p-4" style="background-color: var(--pixel-bg);">
+      <p class="text-xs mb-2" style="color: var(--pixel-text-muted);">本周专注</p>
+      <p class="text-2xl" style="color: #00d9ff;">{{ formatMinutes(weekTotal) }}</p>
+      <p class="text-xs mt-1" style="color: var(--pixel-text-muted);">日均 {{ formatMinutes(Math.round(weekTotal / 7)) }}</p>
     </div>
 
-    <div class="pixel-border p-4 bg-pixel-bg">
-      <p class="text-xs font-pixel text-gray-400 mb-2">本月专注</p>
-      <p class="text-2xl font-pixel text-pixel-pink">{{ formatMinutes(monthTotal) }}</p>
-      <p class="text-xs font-pixel text-gray-500 mt-1">{{ monthCount }}次</p>
+    <div class="pixel-border p-4" style="background-color: var(--pixel-bg);">
+      <p class="text-xs mb-2" style="color: var(--pixel-text-muted);">本月专注</p>
+      <p class="text-2xl" style="color: var(--pixel-secondary);">{{ formatMinutes(monthTotal) }}</p>
+      <p class="text-xs mt-1" style="color: var(--pixel-text-muted);">{{ monthCount }}次</p>
     </div>
 
-    <div class="pixel-border p-4 bg-pixel-bg">
-      <p class="text-xs font-pixel text-gray-400 mb-2">历史总计</p>
-      <p class="text-2xl font-pixel text-pixel-yellow">{{ formatMinutes(totalAll) }}</p>
-      <p class="text-xs font-pixel text-gray-500 mt-1">加油！</p>
+    <div class="pixel-border p-4" style="background-color: var(--pixel-bg);">
+      <p class="text-xs mb-2" style="color: var(--pixel-text-muted);">历史总计</p>
+      <p class="text-2xl" style="color: #ffff00;">{{ formatMinutes(totalAll) }}</p>
+      <p class="text-xs mt-1" style="color: var(--pixel-text-muted);">加油！</p>
     </div>
   </div>
 </template>
