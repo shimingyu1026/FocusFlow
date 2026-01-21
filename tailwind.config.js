@@ -7,15 +7,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        'pixel-bg': '#2d1b4e',
-        'pixel-green': '#39ff14',
-        'pixel-pink': '#ff6ec7',
-        'pixel-yellow': '#ffff00',
-        'pixel-blue': '#00d9ff',
-        'pixel-purple': '#b14eff',
+        'pixel-bg': 'var(--pixel-bg)',
+        'pixel-primary': 'var(--pixel-primary)',
+        'pixel-primary-dark': 'var(--pixel-primary-dark)',
+        'pixel-secondary': 'var(--pixel-secondary)',
+        'pixel-text': 'var(--pixel-text)',
+        'pixel-text-muted': 'var(--pixel-text-muted)',
       },
       fontFamily: {
-        'pixel': ['"Press Start 2P"', 'monospace'],
+        'pixel': ['"VT323"', 'monospace'],
+        'pixel-old': ['"Press Start 2P"', 'monospace'],
       }
     },
   },
