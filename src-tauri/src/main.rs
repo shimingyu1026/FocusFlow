@@ -3,6 +3,7 @@
 use tauri::Manager;
 
 mod database;
+mod models;
 mod timer;
 mod commands;
 
