@@ -8,6 +8,7 @@ mod models;
 mod timer;
 mod commands;
 mod stats;
+mod sound;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -34,6 +35,8 @@ pub fn run() {
             commands::get_tag_stats,
             commands::export_data,
             commands::import_data,
+            commands::play_completion_sound,
+            commands::play_tick_sound,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

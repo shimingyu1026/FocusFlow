@@ -2,6 +2,7 @@ use crate::timer::{TimerState, start_timer, pause_timer, resume_timer, stop_time
 use crate::models::{FocusSession, StatsData};
 use crate::database::{self, get_db_path};
 use crate::stats::{self, DailyStats, TagStats};
+use crate::sound;
 use tauri::{State, Manager};
 use chrono::Utc;
 use uuid::Uuid;
@@ -137,4 +138,14 @@ pub async fn get_tag_stats(
         .map_err(|e| e.to_string())?;
 
     Ok(stats::calculate_tag_stats(&sessions))
+}
+
+#[tauri::command]
+pub async fn play_completion_sound() -> Result<(), String> {
+    sound::play_completion_sound()
+}
+
+#[tauri::command]
+pub async fn play_tick_sound() -> Result<(), String> {
+    sound::play_tick_sound()
 }
