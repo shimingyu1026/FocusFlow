@@ -1,9 +1,14 @@
 <template>
-  <div class="w-full h-full bg-pixel-bg text-white flex items-center justify-center">
-    <p class="text-pixel-green text-2xl">FOCUS FLOW</p>
+  <div class="w-full h-full bg-pixel-bg text-white flex flex-col">
+    <AppHeader />
+    <main class="flex-1 overflow-hidden">
+      <router-view />
+    </main>
+    <AppNav />
   </div>
 </template>
 
 <script setup lang="ts">
-// App root component
+import AppHeader from '@/components/AppHeader.vue'
+import AppNav from '@/components/AppNav.vue'
 </script>
