@@ -38,7 +38,7 @@ const remainingSeconds = ref(0)
 const selectedDuration = ref(25)
 let timerInterval: number | null = null
 
-function handleTaskUpdate(task: string) {
+function handleTaskUpdate(_task: string) {
   // Save task description
 }
 

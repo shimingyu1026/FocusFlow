@@ -7,7 +7,10 @@
       "Bash(npm install:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git init:*)"
+      "Bash(git init:*)",
+      "Bash(pnpm install)",
+      "Bash(pnpm run tauri build:*)",
+      "Bash(pnpm tauri icon:*)"
     ]
   }
 }
