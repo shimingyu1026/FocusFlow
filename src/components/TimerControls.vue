@@ -4,7 +4,8 @@
     <button
       v-if="!isRunning && remainingSeconds === 0"
       @click="handleStart"
-      class="pixel-button pixel-border border-pixel-green bg-pixel-green text-black px-8 py-4 font-pixel text-lg hover:shadow-[0_0_20px_#39ff14]"
+      class="pixel-button px-8 py-4 text-lg"
+      style="--pixel-primary: #39ff14; --pixel-primary-dark: #2ecc0f;"
     >
       ▶ 开始
     </button>
@@ -13,7 +14,8 @@
     <button
       v-if="isRunning"
       @click="handlePause"
-      class="pixel-button pixel-border border-pixel-yellow bg-pixel-yellow text-black px-8 py-4 font-pixel text-lg hover:shadow-[0_0_20px_#ffff00]"
+      class="pixel-button px-8 py-4 text-lg"
+      style="--pixel-primary: #ffff00; --pixel-primary-dark: #cccc00;"
     >
       ⏸ 暂停
     </button>
@@ -22,7 +24,8 @@
     <button
       v-if="!isRunning && remainingSeconds > 0"
       @click="handleResume"
-      class="pixel-button pixel-border border-pixel-green bg-pixel-green text-black px-8 py-4 font-pixel text-lg hover:shadow-[0_0_20px_#39ff14]"
+      class="pixel-button px-8 py-4 text-lg"
+      style="--pixel-primary: #39ff14; --pixel-primary-dark: #2ecc0f;"
     >
       ▶ 继续
     </button>
@@ -31,7 +34,8 @@
     <button
       v-if="remainingSeconds > 0"
       @click="handleStop"
-      class="pixel-button pixel-border border-pixel-pink bg-pixel-pink text-black px-8 py-4 font-pixel text-lg hover:shadow-[0_0_20px_#ff6ec7]"
+      class="pixel-button px-8 py-4 text-lg"
+      style="--pixel-primary: #ff4444; --pixel-primary-dark: #cc0000;"
     >
       ⏹ 停止
     </button>
