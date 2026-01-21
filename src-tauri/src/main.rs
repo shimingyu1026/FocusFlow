@@ -7,6 +7,7 @@ mod database;
 mod models;
 mod timer;
 mod commands;
+mod stats;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -30,6 +31,7 @@ pub fn run() {
             commands::get_sessions,
             commands::delete_session,
             commands::get_stats,
+            commands::get_tag_stats,
             commands::export_data,
             commands::import_data,
         ])

@@ -1,6 +1,7 @@
 use crate::timer::{TimerState, start_timer, pause_timer, resume_timer, stop_timer};
 use crate::models::{FocusSession, StatsData};
 use crate::database::{self, get_db_path};
+use crate::stats::{self, DailyStats, TagStats};
 use tauri::{State, Manager};
 use chrono::Utc;
 use uuid::Uuid;
@@ -110,11 +111,30 @@ pub async fn import_data(
         .map_err(|e| e.to_string())
 }
 
-// Placeholder commands for features to be implemented later
 #[tauri::command]
 pub async fn get_stats(
     app_handle: tauri::AppHandle,
-) -> Result<Vec<crate::models::StatsData>, String> {
-    // Will be implemented in Task 7
-    Ok(vec![])
+) -> Result<Vec<DailyStats>, String> {
+    let app_data_dir = app_handle.path().app_data_dir()
+        .map_err(|e| e.to_string())?;
+    let db_path = database::get_db_path(app_data_dir);
+
+    let sessions = database::get_sessions(&db_path, None)
+        .map_err(|e| e.to_string())?;
+
+    Ok(stats::calculate_daily_stats(&sessions, 30))
+}
+
+#[tauri::command]
+pub async fn get_tag_stats(
+    app_handle: tauri::AppHandle,
+) -> Result<Vec<TagStats>, String> {
+    let app_data_dir = app_handle.path().app_data_dir()
+        .map_err(|e| e.to_string())?;
+    let db_path = database::get_db_path(app_data_dir);
+
+    let sessions = database::get_sessions(&db_path, None)
+        .map_err(|e| e.to_string())?;
+
+    Ok(stats::calculate_tag_stats(&sessions))
 }
