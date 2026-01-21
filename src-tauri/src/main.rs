@@ -1,6 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use tauri::Manager;
+use crate::timer::TimerState;
 
 mod database;
 mod models;
@@ -9,11 +10,16 @@ mod commands;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let timer_state = TimerState::new();
+
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
+        .manage(timer_state)
         .setup(|app| {
             // Initialize database
-            database::init_db(app.path().app_data_dir())?;
+            let app_data_dir = app.path().app_data_dir()
+                .expect("Failed to get app data dir");
+            database::init_db(app_data_dir)?;
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -22,6 +28,7 @@ pub fn run() {
             commands::resume_session,
             commands::stop_session,
             commands::get_sessions,
+            commands::delete_session,
             commands::get_stats,
             commands::export_data,
             commands::import_data,
