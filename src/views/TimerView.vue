@@ -21,6 +21,14 @@
     <div v-if="isRunning" class="pixel-border p-4 bg-pixel-bg max-w-md text-center">
       <p class="text-sm font-pixel text-pixel-green">💪 保持专注，你可以的！</p>
     </div>
+
+    <!-- Completion Animation -->
+    <CompletionAnimation
+      v-if="showCompletion"
+      :duration="selectedDuration"
+      :today-count="todayCompletedCount"
+      @close="showCompletion = false"
+    />
   </div>
 </template>
 
@@ -31,12 +39,15 @@ import { useTimerStore } from '@/stores/timer'
 import { useSettingsStore } from '@/stores/settings'
 import TimerDisplay from '@/components/TimerDisplay.vue'
 import TimerControls from '@/components/TimerControls.vue'
+import CompletionAnimation from '@/components/CompletionAnimation.vue'
 
 const timerStore = useTimerStore()
 const settingsStore = useSettingsStore()
 const isRunning = ref(false)
 const remainingSeconds = ref(0)
 const selectedDuration = ref(25)
+const showCompletion = ref(false)
+const todayCompletedCount = ref(0)
 let timerInterval: number | null = null
 
 function handleTaskUpdate(_task: string) {
@@ -80,7 +91,9 @@ async function handleStop(completed: boolean) {
 
   if (completed && settingsStore.soundEnabled) {
     await invoke('play_completion_sound')
-    alert('🎉 恭喜！完成了一次专注！')
+    // Show completion animation instead of alert
+    todayCompletedCount.value++
+    showCompletion.value = true
   }
 }
 
