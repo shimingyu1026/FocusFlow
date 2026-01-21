@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Press Start 2P', monospace;
+  background-color: #2d1b4e;
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  width: 100%;
+  height: 100vh;
+}
+
+/* Pixel art border utility */
+.pixel-border {
+  border: 4px solid #39ff14;
+  box-shadow:
+    4px 0 0 0 #39ff14,
+    -4px 0 0 0 #39ff14,
+    0 4px 0 0 #39ff14,
+    0 -4px 0 0 #39ff14;
+}
+
+.pixel-button {
+  transition: all 0.1s;
+  image-rendering: pixelated;
+}
+
+.pixel-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px #39ff14;
+}
+
+.pixel-button:active {
+  transform: scale(0.95);
+}
