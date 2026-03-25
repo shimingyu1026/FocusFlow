@@ -7,11 +7,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useTimerStore } from '@/stores/timer'
 import StatsCards from '@/components/StatsCards.vue'
 import TrendChart from '@/components/TrendChart.vue'
 import TagDistribution from '@/components/TagDistribution.vue'
+import { onSessionsUpdated } from '@/utils/sessionEvents'
 import type { FocusSession } from '@/types/database'
 
 const timerStore = useTimerStore()
@@ -21,5 +22,15 @@ async function loadSessions() {
   sessions.value = await timerStore.loadSessions()
 }
 
-onMounted(() => loadSessions())
+let stopListening: (() => void) | null = null
+
+onMounted(() => {
+  loadSessions()
+  stopListening = onSessionsUpdated(loadSessions)
+})
+
+onUnmounted(() => {
+  stopListening?.()
+  stopListening = null
+})
 </script>

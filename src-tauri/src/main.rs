@@ -33,6 +33,7 @@ pub fn run() {
             commands::stop_session,
             commands::get_sessions,
             commands::delete_session,
+            commands::clear_all_data,
             commands::get_stats,
             commands::get_tag_stats,
             commands::export_data,

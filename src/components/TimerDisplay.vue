@@ -1,39 +1,82 @@
 <template>
-  <div class="flex flex-col items-center gap-8">
-    <!-- Task input -->
-    <div class="pixel-border p-4 w-full max-w-md bg-pixel-bg">
-      <input
-        v-model="taskInput"
-        type="text"
-        placeholder="输入当前专注任务..."
-        class="w-full bg-transparent text-white font-pixel text-sm outline-none placeholder-gray-500"
-        :disabled="isRunning"
-      />
-    </div>
+  <div class="timer-layout">
+    <section class="timer-panel timer-panel--inputs">
+      <div class="timer-panel-header">
+        <span class="timer-kicker">Focus Session</span>
+        <h2 class="timer-title">安排这一轮专注</h2>
+      </div>
 
-    <!-- Circular timer with progress ring -->
-    <div class="timer-scale-wrapper">
+      <div class="timer-field-group">
+        <label class="timer-label" for="task-input">当前任务</label>
+        <input
+          id="task-input"
+          v-model="taskInput"
+          type="text"
+          placeholder="例如：整理周报、完成登录页、背 20 个单词"
+          class="timer-input"
+          :disabled="isRunning"
+        />
+      </div>
+
+      <div class="timer-field-group">
+        <label class="timer-label" for="tags-input">标签</label>
+        <input
+          id="tags-input"
+          v-model="tagsInput"
+          type="text"
+          placeholder="例如：工作, 深度思考, 写作"
+          class="timer-input"
+          :disabled="isRunning"
+        />
+      </div>
+
+      <div class="timer-presets">
+        <div class="timer-presets-head">
+          <span class="timer-label">专注时长</span>
+          <span class="timer-preset-note">推荐先从 25 分钟开始</span>
+        </div>
+
+        <div class="timer-duration-grid">
+          <button
+            v-for="duration in [15, 25, 45, 60]"
+            :key="duration"
+            @click="selectDuration(duration)"
+            class="timer-duration-button"
+            :class="{ 'timer-duration-button--active': props.selectedDuration === duration }"
+          >
+            <span class="timer-duration-value">{{ duration }}</span>
+            <span class="timer-duration-unit">分钟</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="timer-inline-meta">
+        <span>当前状态 {{ statusLabel }}</span>
+        <span>目标时长 {{ props.selectedDuration }} 分钟</span>
+      </div>
+    </section>
+
+    <section class="timer-panel timer-panel--hero">
+      <div class="timer-ambient"></div>
+
       <div class="timer-circle-container">
-        <!-- SVG Progress Ring -->
         <svg class="timer-progress-ring" viewBox="0 0 320 320">
-          <!-- Background circle -->
           <circle
             cx="160"
             cy="160"
             r="144"
             fill="none"
-            stroke="rgba(30, 27, 75, 0.3)"
-            stroke-width="8"
+            class="progress-ring-track"
+            stroke-width="10"
           />
-          <!-- Progress circle -->
           <circle
             class="progress-circle"
             cx="160"
             cy="160"
             r="144"
             fill="none"
-            :stroke="isRunning ? 'var(--color-primary)' : 'var(--color-secondary)'"
-            stroke-width="8"
+            :stroke="progressColor"
+            stroke-width="10"
             stroke-linecap="round"
             transform="rotate(-90 160 160)"
             :stroke-dasharray="progressCircumference"
@@ -41,229 +84,441 @@
           />
         </svg>
 
-        <!-- Inner circle container -->
         <div class="timer-inner-circle">
-          <!-- Time display -->
+          <span class="timer-status-pill" :class="`timer-status-pill--${statusTone}`">
+            {{ statusLabel }}
+          </span>
           <p class="timer-text">{{ formattedTime }}</p>
-
-          <!-- Status label -->
-          <p
-            v-if="isRunning"
-            class="timer-status-active"
-          >
-            专注中...
-          </p>
-          <p v-else class="timer-status-idle">准备开始</p>
+          <p class="timer-support">{{ statusDescription }}</p>
         </div>
-
-        <!-- Pixel star decorations -->
-        <div class="pixel-star pixel-star-top-left"></div>
-        <div class="pixel-star pixel-star-top-right"></div>
-        <div class="pixel-star pixel-star-bottom-left"></div>
-        <div class="pixel-star pixel-star-bottom-right"></div>
       </div>
-    </div>
 
-    <!-- Duration selection -->
-    <div v-if="!isRunning && remainingSeconds === 0" class="flex gap-4">
-      <button
-        v-for="duration in [15, 25, 45, 60]"
-        :key="duration"
-        @click="selectDuration(duration)"
-        class="pixel-button px-4 py-2 pixel-border border-pixel-blue text-sm font-pixel"
-        :class="{ 'bg-pixel-blue text-black': selectedDuration === duration }"
-      >
-        {{ duration }}分钟
-      </button>
-    </div>
+      <div class="timer-actions">
+        <slot name="actions" />
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const props = withDefaults(defineProps<{
   isRunning: boolean
   remainingSeconds: number
   totalSeconds?: number
+  selectedDuration?: number
 }>(), {
-  totalSeconds: 0
+  totalSeconds: 0,
+  selectedDuration: 25,
 })
 
 const emit = defineEmits<{
   'update:task': [task: string]
+  'update:tags': [tags: string[]]
   'select-duration': [duration: number]
 }>()
 
 const taskInput = ref('')
-const selectedDuration = ref(25)
+const tagsInput = ref('')
 
-// Progress ring calculations
-const progressCircumference = 2 * Math.PI * 144 // ≈ 904.78
+const parsedTags = computed(() =>
+  Array.from(
+    new Set(
+      tagsInput.value
+        .split(/[，,]/)
+        .map(tag => tag.trim())
+        .filter(Boolean),
+    ),
+  ),
+)
+
+const displayRemainingSeconds = computed(() => {
+  if (!props.isRunning && props.remainingSeconds === 0 && props.totalSeconds > 0) {
+    return props.totalSeconds
+  }
+
+  return props.remainingSeconds
+})
+
+const isPaused = computed(() => !props.isRunning && props.remainingSeconds > 0)
+
+const statusLabel = computed(() => {
+  if (props.isRunning) return '专注中'
+  if (isPaused.value) return '已暂停'
+  return '待开始'
+})
+
+const statusTone = computed(() => {
+  if (props.isRunning) return 'active'
+  if (isPaused.value) return 'paused'
+  return 'idle'
+})
+
+const statusDescription = computed(() => {
+  if (props.isRunning) return '保持节奏，别切走注意力。'
+  if (isPaused.value) return '可以恢复继续，或直接结束这一轮。'
+  return '准备好后，一键开始这一轮深度工作。'
+})
+
+const progressColor = computed(() => {
+  if (props.isRunning) return 'var(--pixel-primary)'
+  if (isPaused.value) return 'var(--pixel-warning)'
+  return 'var(--pixel-secondary)'
+})
+
+const progressCircumference = 2 * Math.PI * 144
 
 const progressOffset = computed(() => {
   if (!props.totalSeconds || props.totalSeconds === 0) {
     return 0
   }
-  const progress = props.remainingSeconds / props.totalSeconds
+  const progress = displayRemainingSeconds.value / props.totalSeconds
   return progressCircumference * (1 - progress)
 })
 
 const formattedTime = computed(() => {
-  const minutes = Math.floor(props.remainingSeconds / 60)
-  const seconds = props.remainingSeconds % 60
+  const minutes = Math.floor(displayRemainingSeconds.value / 60)
+  const seconds = displayRemainingSeconds.value % 60
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 })
 
-watch(taskInput, (newTask) => {
+watch(taskInput, newTask => {
   emit('update:task', newTask)
 })
 
+watch(parsedTags, newTags => {
+  emit('update:tags', newTags)
+})
+
 function selectDuration(duration: number) {
-  selectedDuration.value = duration
   emit('select-duration', duration)
 }
 </script>
 
 <style scoped>
-/* Responsive scaling wrapper */
-.timer-scale-wrapper {
-  max-width: 100%;
-  max-height: 100%;
-  transform-origin: center center;
+.timer-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(320px, 1fr);
+  gap: 18px;
+  width: 100%;
+  align-items: stretch;
 }
 
-/* Main circle container - 320px × 320px */
+.timer-panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
+    var(--pixel-panel-solid);
+  box-shadow:
+    0 24px 70px rgba(15, 23, 42, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  padding: 20px;
+}
+
+.timer-panel--inputs {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.timer-panel--hero {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.timer-panel-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.timer-kicker {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  background: rgba(20, 184, 166, 0.12);
+  padding: 6px 10px;
+  color: var(--pixel-primary);
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.timer-title {
+  margin: 0;
+  color: var(--pixel-text);
+  font-size: 1.55rem;
+  line-height: 0.95;
+}
+
+.timer-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.timer-label {
+  color: var(--pixel-text-muted);
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+}
+
+.timer-input {
+  width: 100%;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.18);
+  padding: 14px 16px;
+  color: var(--pixel-text);
+  font-family: 'VT323', monospace;
+  font-size: 1.35rem;
+  outline: none;
+}
+
+.timer-input:focus {
+  border-color: rgba(20, 184, 166, 0.55);
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.12);
+}
+
+.timer-presets {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.timer-presets-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.timer-preset-note {
+  color: var(--pixel-text-muted);
+  font-size: 0.95rem;
+}
+
+.timer-duration-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.timer-duration-button {
+  display: flex;
+  min-height: 76px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.14);
+  color: var(--pixel-text);
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: transform 0.16s ease, border-color 0.16s ease, background-color 0.16s ease;
+}
+
+.timer-duration-button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(20, 184, 166, 0.4);
+}
+
+.timer-duration-button--active {
+  border-color: rgba(20, 184, 166, 0.58);
+  background:
+    linear-gradient(135deg, rgba(20, 184, 166, 0.16), rgba(249, 115, 22, 0.12)),
+    rgba(15, 23, 42, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(20, 184, 166, 0.18);
+}
+
+.timer-duration-value {
+  color: var(--pixel-text);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.timer-duration-unit {
+  color: var(--pixel-text-muted);
+  font-size: 1rem;
+}
+
+.timer-inline-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--pixel-text-muted);
+  font-size: 0.95rem;
+}
+
+.timer-ambient {
+  position: absolute;
+  inset: 12% 14% auto;
+  height: 180px;
+  border-radius: 999px;
+  background: radial-gradient(circle, var(--pixel-glow), transparent 70%);
+  filter: blur(28px);
+  pointer-events: none;
+}
+
 .timer-circle-container {
   position: relative;
-  width: 320px;
-  height: 320px;
-  margin: 0 auto;
+  width: 286px;
+  height: 286px;
+  flex-shrink: 0;
 }
 
-/* SVG Progress Ring */
 .timer-progress-ring {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 0 8px var(--color-primary));
+  filter: drop-shadow(0 0 12px rgba(20, 184, 166, 0.18));
 }
 
-/* Progress circle animation */
+.progress-ring-track {
+  stroke: rgba(148, 163, 184, 0.12);
+}
+
 .progress-circle {
-  transition: stroke-dashoffset 1s linear;
+  transition: stroke-dashoffset 1s linear, stroke 0.2s ease;
 }
 
-/* Inner circle with semi-transparent background */
 .timer-inner-circle {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 280px;
-  height: 280px;
-  border-radius: 50%;
-  background: rgba(30, 27, 75, 0.8);
   display: flex;
+  width: 230px;
+  height: 230px;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 58%),
+    rgba(20, 24, 52, 0.92);
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    inset 0 -24px 60px rgba(15, 23, 42, 0.35);
 }
 
-/* Timer text - VT323 font, 5.5rem (88px) */
+.timer-status-pill {
+  margin-bottom: 14px;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+}
+
+.timer-status-pill--active {
+  background: rgba(20, 184, 166, 0.14);
+  color: var(--pixel-primary);
+}
+
+.timer-status-pill--paused {
+  background: rgba(250, 204, 21, 0.16);
+  color: var(--pixel-warning);
+}
+
+.timer-status-pill--idle {
+  background: rgba(249, 115, 22, 0.14);
+  color: var(--pixel-secondary);
+}
+
 .timer-text {
-  font-family: 'VT323', monospace;
-  font-size: 5.5rem;
-  font-weight: 400;
-  line-height: 1;
-  color: var(--color-primary);
-  letter-spacing: 0.1em;
-  text-shadow: 0 0 10px var(--color-primary);
   margin: 0;
+  color: var(--pixel-text);
+  font-size: 4.6rem;
+  line-height: 0.95;
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 18px rgba(20, 184, 166, 0.22);
 }
 
-/* Active status label with pulse animation */
-.timer-status-active {
-  font-family: 'VT323', monospace;
-  font-size: 1.25rem;
-  color: var(--color-secondary);
-  margin-top: 1rem;
-  animation: pulse 2s ease-in-out infinite;
+.timer-support {
+  margin: 12px 24px 0;
+  color: var(--pixel-text-muted);
+  font-size: 1rem;
+  line-height: 1.1;
+  text-align: center;
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-    text-shadow: 0 0 10px var(--color-secondary);
+.timer-actions {
+  width: 100%;
+}
+
+@media (max-width: 460px) {
+  .timer-layout {
+    grid-template-columns: 1fr;
   }
-  50% {
-    opacity: 0.7;
-    text-shadow: 0 0 20px var(--color-secondary);
-  }
-}
 
-/* Idle status label */
-.timer-status-idle {
-  font-family: 'VT323', monospace;
-  font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.4);
-  margin-top: 1rem;
-}
-
-/* Pixel star decorations */
-.pixel-star {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background: var(--color-primary);
-  clip-path: polygon(
-    50% 0%,
-    61% 35%,
-    98% 35%,
-    68% 57%,
-    79% 91%,
-    50% 70%,
-    21% 91%,
-    32% 57%,
-    2% 35%,
-    39% 35%
-  );
-  box-shadow: 0 0 8px var(--color-primary);
-}
-
-.pixel-star-top-left {
-  top: -8px;
-  left: -8px;
-}
-
-.pixel-star-top-right {
-  top: -8px;
-  right: -8px;
-}
-
-.pixel-star-bottom-left {
-  bottom: -8px;
-  left: -8px;
-}
-
-.pixel-star-bottom-right {
-  bottom: -8px;
-  right: -8px;
-}
-
-/* Responsive breakpoints */
-@media (max-width: 450px) {
-  .timer-scale-wrapper {
-    transform: scale(0.75);
+  .timer-panel--hero {
+    order: -1;
   }
 }
 
-@media (max-width: 350px) {
-  .timer-scale-wrapper {
-    transform: scale(0.65);
+@media (max-height: 760px) {
+  .timer-panel {
+    padding: 22px;
+  }
+
+  .timer-layout {
+    gap: 18px;
+  }
+
+  .timer-circle-container {
+    width: 300px;
+    height: 300px;
+  }
+
+  .timer-inner-circle {
+    width: 244px;
+    height: 244px;
+  }
+
+  .timer-text {
+    font-size: 5rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .timer-panel {
+    padding: 18px;
+    border-radius: 24px;
+  }
+
+  .timer-title {
+    font-size: 1.7rem;
+  }
+
+  .timer-duration-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .timer-circle-container {
+    width: 260px;
+    height: 260px;
+  }
+
+  .timer-inner-circle {
+    width: 208px;
+    height: 208px;
+  }
+
+  .timer-text {
+    font-size: 4rem;
   }
 }
 </style>

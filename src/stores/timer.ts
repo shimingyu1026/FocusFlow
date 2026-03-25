@@ -8,8 +8,8 @@ export const useTimerStore = defineStore('timer', () => {
   const remainingSeconds = ref(0)
   const currentTask = ref('')
 
-  async function startSession(duration: number, task: string) {
-    await invoke('start_session', { duration, task })
+  async function startSession(duration: number, task: string, tags: string[] = []) {
+    await invoke('start_session', { duration, task, tags })
     isRunning.value = true
     remainingSeconds.value = duration * 60
     currentTask.value = task
@@ -25,8 +25,8 @@ export const useTimerStore = defineStore('timer', () => {
     isRunning.value = true
   }
 
-  async function stopSession(completed: boolean) {
-    await invoke('stop_session', { completed })
+  async function stopSession(completed: boolean, elapsedSeconds: number) {
+    await invoke('stop_session', { completed, elapsed_seconds: elapsedSeconds })
     isRunning.value = false
     remainingSeconds.value = 0
     currentTask.value = ''

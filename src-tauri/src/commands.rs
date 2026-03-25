@@ -1,6 +1,6 @@
 use crate::timer::{TimerState, start_timer, pause_timer, resume_timer, stop_timer};
-use crate::models::{FocusSession, StatsData};
-use crate::database::{self, get_db_path};
+use crate::models::FocusSession;
+use crate::database;
 use crate::stats::{self, DailyStats, TagStats};
 use crate::sound;
 use tauri::{State, Manager};
@@ -12,9 +12,10 @@ pub async fn start_session(
     state: State<'_, TimerState>,
     duration: i32,
     task: String,
+    tags: Vec<String>,
     _app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
-    start_timer(&state, duration, task);
+    start_timer(&state, duration, task, tags);
     Ok(())
 }
 
@@ -34,20 +35,23 @@ pub async fn resume_session(state: State<'_, TimerState>) -> Result<(), String> 
 pub async fn stop_session(
     state: State<'_, TimerState>,
     completed: bool,
+    elapsed_seconds: i32,
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
     let task = state.current_task.lock().unwrap().clone().unwrap_or_default();
+    let tags = state.current_tags.lock().unwrap().clone();
     let start_time = state.start_time.lock().unwrap().clone().unwrap_or_default();
-    let remaining = *state.remaining_seconds.lock().unwrap();
+    let safe_elapsed = elapsed_seconds.max(0);
+    let duration_minutes = (safe_elapsed / 60).max(1);
 
     let session = FocusSession {
         id: Uuid::new_v4().to_string(),
         task,
-        duration: (remaining / 60).max(1),
+        duration: duration_minutes,
         start_time,
         end_time: Utc::now().to_rfc3339(),
         completed,
-        tags: vec![],
+        tags,
     };
 
     let app_data_dir = app_handle.path().app_data_dir()
@@ -59,6 +63,18 @@ pub async fn stop_session(
 
     stop_timer(&state);
     Ok(())
+}
+
+#[tauri::command]
+pub async fn clear_all_data(
+    app_handle: tauri::AppHandle,
+) -> Result<usize, String> {
+    let app_data_dir = app_handle.path().app_data_dir()
+        .map_err(|e| e.to_string())?;
+    let db_path = database::get_db_path(app_data_dir);
+
+    database::clear_all_sessions(&db_path)
+        .map_err(|e| e.to_string())
 }
 
 #[tauri::command]

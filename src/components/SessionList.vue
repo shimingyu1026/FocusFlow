@@ -25,7 +25,7 @@
 
     <!-- Session list -->
     <div class="flex-1 overflow-y-auto px-4 pb-4">
-      <div v-if="filteredSessions.length === 0" class="text-center text-gray-500 font-pixel text-sm mt-12">
+      <div v-if="filteredSessions.length === 0" class="text-center text-pixel-text-muted font-pixel text-sm mt-12">
         暂无记录
       </div>
       <SessionCard

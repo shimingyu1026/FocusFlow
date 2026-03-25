@@ -1,49 +1,98 @@
 <template>
-  <nav class="h-20 border-t-4 flex items-center justify-around" style="background-color: var(--pixel-bg); border-color: var(--pixel-primary);">
+  <nav class="app-nav">
     <router-link
       to="/"
-      class="pixel-button flex flex-col items-center gap-2 p-4"
+      class="app-nav__link"
       :class="{ 'nav-active': $route.name === 'timer' }"
     >
-      <span class="text-2xl">⏱️</span>
-      <span class="text-xs">计时器</span>
+      <span class="app-nav__icon">⏱️</span>
+      <span class="app-nav__label">计时器</span>
     </router-link>
 
     <router-link
       to="/history"
-      class="pixel-button flex flex-col items-center gap-2 p-4"
+      class="app-nav__link"
       :class="{ 'nav-active': $route.name === 'history' }"
     >
-      <span class="text-2xl">📝</span>
-      <span class="text-xs">历史</span>
+      <span class="app-nav__icon">📝</span>
+      <span class="app-nav__label">历史</span>
     </router-link>
 
     <router-link
       to="/statistics"
-      class="pixel-button flex flex-col items-center gap-2 p-4"
+      class="app-nav__link"
       :class="{ 'nav-active': $route.name === 'statistics' }"
     >
-      <span class="text-2xl">📊</span>
-      <span class="text-xs">统计</span>
+      <span class="app-nav__icon">📊</span>
+      <span class="app-nav__label">统计</span>
     </router-link>
 
     <router-link
       to="/settings"
-      class="pixel-button flex flex-col items-center gap-2 p-4"
+      class="app-nav__link"
       :class="{ 'nav-active': $route.name === 'settings' }"
     >
-      <span class="text-2xl">⚙️</span>
-      <span class="text-xs">设置</span>
+      <span class="app-nav__icon">⚙️</span>
+      <span class="app-nav__label">设置</span>
     </router-link>
   </nav>
 </template>
 
-<script setup lang="ts">
-// Navigation component
-</script>
-
 <style scoped>
+.app-nav {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.18);
+  padding: 10px 14px 12px;
+  backdrop-filter: blur(18px);
+}
+
+.app-nav__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--pixel-text-muted);
+  padding: 12px 10px;
+  text-decoration: none;
+  transition:
+    transform 0.16s ease,
+    border-color 0.16s ease,
+    background-color 0.16s ease,
+    color 0.16s ease;
+}
+
+.app-nav__link:hover {
+  transform: translateY(-1px);
+  border-color: rgba(20, 184, 166, 0.22);
+  color: var(--pixel-text);
+}
+
+.app-nav__icon {
+  font-size: 1rem;
+}
+
+.app-nav__label {
+  font-size: 1rem;
+}
+
 .nav-active {
-  color: var(--pixel-primary);
+  border-color: rgba(20, 184, 166, 0.3);
+  background:
+    linear-gradient(135deg, rgba(20, 184, 166, 0.14), rgba(249, 115, 22, 0.08)),
+    rgba(255, 255, 255, 0.06);
+  color: var(--pixel-text);
+  box-shadow: inset 0 0 0 1px rgba(20, 184, 166, 0.08);
+}
+
+@media (max-width: 420px) {
+  .app-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 </style>

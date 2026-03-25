@@ -1,57 +1,70 @@
 <template>
-  <div class="h-full flex flex-col items-center justify-center gap-12 p-8">
-    <TimerDisplay
-      :is-running="isRunning"
-      :remaining-seconds="remainingSeconds"
-      :total-seconds="selectedDuration * 60"
-      @update:task="handleTaskUpdate"
-      @select-duration="handleDurationSelect"
-    />
+  <div class="flex h-full items-center justify-center overflow-hidden px-5 py-4 sm:px-6 sm:py-5">
+    <div class="mx-auto flex w-full max-w-4xl flex-col items-center justify-center gap-6 sm:gap-8">
+      <TimerDisplay
+        :is-running="isRunning"
+        :remaining-seconds="remainingSeconds"
+        :total-seconds="selectedDuration * 60"
+        :selected-duration="selectedDuration"
+        @update:task="handleTaskUpdate"
+        @update:tags="handleTagsUpdate"
+        @select-duration="handleDurationSelect"
+      >
+        <template #actions>
+          <TimerControls
+            :is-running="isRunning"
+            :remaining-seconds="remainingSeconds"
+            @start="handleStart"
+            @pause="handlePause"
+            @resume="handleResume"
+            @stop="handleStop"
+          />
+        </template>
+      </TimerDisplay>
 
-    <TimerControls
-      :is-running="isRunning"
-      :remaining-seconds="remainingSeconds"
-      @start="handleStart"
-      @pause="handlePause"
-      @resume="handleResume"
-      @stop="handleStop"
-    />
-
-    <!-- Focus tip -->
-    <div v-if="isRunning" class="pixel-border p-4 bg-pixel-bg max-w-md text-center">
-      <p class="text-sm font-pixel text-pixel-green">💪 保持专注，你可以的！</p>
+      <!-- Focus tip -->
+      <div v-if="isRunning" class="pixel-border p-4 bg-pixel-bg max-w-md text-center">
+        <p class="text-sm font-pixel text-pixel-green">💪 保持专注，你可以的！</p>
+      </div>
     </div>
 
-    <!-- Completion Animation -->
     <CompletionAnimation
       v-if="showCompletion"
       :duration="selectedDuration"
       :today-count="todayCompletedCount"
+      :variant="settingsStore.celebrationStyle"
       @close="showCompletion = false"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { invoke } from '@tauri-apps/api/core'
 import { useTimerStore } from '@/stores/timer'
 import { useSettingsStore } from '@/stores/settings'
 import TimerDisplay from '@/components/TimerDisplay.vue'
 import TimerControls from '@/components/TimerControls.vue'
 import CompletionAnimation from '@/components/CompletionAnimation.vue'
+import { emitSessionsUpdated } from '@/utils/sessionEvents'
 
 const timerStore = useTimerStore()
 const settingsStore = useSettingsStore()
 const isRunning = ref(false)
 const remainingSeconds = ref(0)
-const selectedDuration = ref(25)
+const selectedDuration = ref(settingsStore.defaultDuration)
 const showCompletion = ref(false)
 const todayCompletedCount = ref(0)
+const currentTask = ref('')
+const currentTags = ref<string[]>([])
 let timerInterval: number | null = null
 
-function handleTaskUpdate(_task: string) {
-  // Save task description
+function handleTaskUpdate(task: string) {
+  currentTask.value = task.trim()
+}
+
+function handleTagsUpdate(tags: string[]) {
+  currentTags.value = tags
 }
 
 function handleDurationSelect(duration: number) {
@@ -59,7 +72,7 @@ function handleDurationSelect(duration: number) {
 }
 
 async function handleStart() {
-  await timerStore.startSession(selectedDuration.value, '')
+  await timerStore.startSession(selectedDuration.value, currentTask.value, currentTags.value)
   isRunning.value = true
   remainingSeconds.value = selectedDuration.value * 60
   startTimer()
@@ -81,7 +94,9 @@ async function handleResume() {
 }
 
 async function handleStop(completed: boolean) {
-  await timerStore.stopSession(completed)
+  const elapsedSeconds = Math.max(0, selectedDuration.value * 60 - remainingSeconds.value)
+  await timerStore.stopSession(completed, elapsedSeconds)
+  emitSessionsUpdated()
   isRunning.value = false
   remainingSeconds.value = 0
   if (timerInterval) {
@@ -97,6 +112,12 @@ async function handleStop(completed: boolean) {
   }
 }
 
+watch(() => settingsStore.defaultDuration, (newDuration) => {
+  if (!isRunning.value && remainingSeconds.value === 0) {
+    selectedDuration.value = newDuration
+  }
+})
+
 function startTimer() {
   const endTime = Date.now() + remainingSeconds.value * 1000
 
@@ -106,6 +127,10 @@ function startTimer() {
     remainingSeconds.value = Math.floor(diff / 1000)
 
     if (diff <= 0) {
+      if (timerInterval) {
+        clearInterval(timerInterval)
+        timerInterval = null
+      }
       handleStop(true)
     }
   }, 100) as unknown as number

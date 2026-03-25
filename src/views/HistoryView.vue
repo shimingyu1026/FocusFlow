@@ -8,9 +8,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useTimerStore } from '@/stores/timer'
 import SessionList from '@/components/SessionList.vue'
+import { emitSessionsUpdated, onSessionsUpdated } from '@/utils/sessionEvents'
 import type { FocusSession } from '@/types/database'
 
 const timerStore = useTimerStore()
@@ -22,10 +23,19 @@ async function loadSessions() {
 
 async function handleDelete(id: string) {
   await timerStore.deleteSession(id)
+  emitSessionsUpdated()
   await loadSessions()
 }
 
 onMounted(() => {
   loadSessions()
+  stopListening = onSessionsUpdated(loadSessions)
+})
+
+let stopListening: (() => void) | null = null
+
+onUnmounted(() => {
+  stopListening?.()
+  stopListening = null
 })
 </script>

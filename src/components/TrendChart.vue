@@ -11,9 +11,11 @@
 import { ref, onMounted, watch } from 'vue'
 import { invoke } from '@tauri-apps/api/core'
 import Chart from 'chart.js/auto'
+import { useSettingsStore } from '@/stores/settings'
 
 const chartCanvas = ref<HTMLCanvasElement>()
 let chartInstance: Chart | null = null
+const settingsStore = useSettingsStore()
 
 const props = defineProps<{
   sessions: any[]
@@ -37,6 +39,10 @@ async function renderChart() {
   const ctx = chartCanvas.value.getContext('2d')
   if (!ctx) return
 
+  const styles = getComputedStyle(document.documentElement)
+  const primary = styles.getPropertyValue('--pixel-primary').trim() || '#14b8a6'
+  const textMuted = styles.getPropertyValue('--pixel-text-muted').trim() || '#94a3b8'
+
   chartInstance = new Chart(ctx, {
     type: 'line',
     data: {
@@ -44,12 +50,12 @@ async function renderChart() {
       datasets: [{
         label: '专注时长(小时)',
         data,
-        borderColor: '#39ff14',
-        backgroundColor: 'rgba(57, 255, 20, 0.1)',
+        borderColor: primary,
+        backgroundColor: `${primary}1f`,
         borderWidth: 2,
         tension: 0,
         pointRadius: 3,
-        pointBackgroundColor: '#39ff14',
+        pointBackgroundColor: primary,
       }]
     },
     options: {
@@ -61,16 +67,16 @@ async function renderChart() {
       scales: {
         y: {
           beginAtZero: true,
-          grid: { color: 'rgba(255, 255, 255, 0.1)' },
+          grid: { color: `${textMuted}33` },
           ticks: {
-            color: '#9ca3af',
+            color: textMuted,
             font: { family: '"Press Start 2P"' }
           }
         },
         x: {
           grid: { display: false },
           ticks: {
-            color: '#9ca3af',
+            color: textMuted,
             font: { family: '"Press Start 2P"', size: 8 }
           }
         }
@@ -81,4 +87,5 @@ async function renderChart() {
 
 onMounted(() => renderChart())
 watch(() => props.sessions, () => renderChart(), { deep: true })
+watch(() => [settingsStore.themeMode, settingsStore.themeAccent], () => renderChart())
 </script>

@@ -1,7 +1,6 @@
 use rusqlite::{Connection, Result as SqliteResult};
 use std::path::{PathBuf, Path};
 use crate::models::FocusSession;
-use chrono::Utc;
 
 const DB_NAME: &str = "focusflow.db";
 
@@ -96,6 +95,12 @@ pub fn delete_session(db_path: &Path, id: &str) -> SqliteResult<()> {
     Ok(())
 }
 
+pub fn clear_all_sessions(db_path: &Path) -> SqliteResult<usize> {
+    let conn = Connection::open(db_path)?;
+    let deleted = conn.execute("DELETE FROM sessions", [])?;
+    Ok(deleted)
+}
+
 pub fn export_data(db_path: &Path) -> SqliteResult<String> {
     let sessions = get_sessions(db_path, None)?;
     let json = serde_json::to_string(&sessions).map_err(|e| {
@@ -108,12 +113,16 @@ pub fn import_data(db_path: &Path, json_data: &str) -> SqliteResult<usize> {
     let sessions: Vec<FocusSession> = serde_json::from_str(json_data)
         .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?;
 
-    let conn = Connection::open(db_path)?;
+    let mut conn = Connection::open(db_path)?;
+    let tx = conn.transaction()?;
     let mut count = 0;
+
+    // Replace existing data with imported snapshot
+    tx.execute("DELETE FROM sessions", [])?;
 
     for session in sessions {
         let tags_json = serde_json::to_string(&session.tags).unwrap();
-        conn.execute(
+        tx.execute(
             "INSERT OR REPLACE INTO sessions (id, task, duration, start_time, end_time, completed, tags)
              VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
             [
@@ -128,6 +137,8 @@ pub fn import_data(db_path: &Path, json_data: &str) -> SqliteResult<usize> {
         )?;
         count += 1;
     }
+
+    tx.commit()?;
 
     Ok(count)
 }

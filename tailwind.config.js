@@ -13,6 +13,10 @@ export default {
         'pixel-secondary': 'var(--pixel-secondary)',
         'pixel-text': 'var(--pixel-text)',
         'pixel-text-muted': 'var(--pixel-text-muted)',
+        'pixel-green': 'var(--pixel-primary)',
+        'pixel-blue': 'var(--pixel-primary)',
+        'pixel-yellow': 'var(--pixel-warning)',
+        'pixel-pink': 'var(--pixel-secondary)',
       },
       fontFamily: {
         'pixel': ['"VT323"', 'monospace'],

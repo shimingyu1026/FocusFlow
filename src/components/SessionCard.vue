@@ -1,5 +1,5 @@
 <template>
-  <div class="pixel-border p-4 mb-4" style="background-color: var(--pixel-bg);">
+  <div class="pixel-border p-4 mb-4" style="background-color: var(--pixel-panel-solid);">
     <div class="flex justify-between items-start gap-4">
       <div class="flex-1">
         <h3 class="text-sm mb-2" style="color: var(--pixel-primary);">{{ session.task || '未命名任务' }}</h3>
