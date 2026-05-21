@@ -9,13 +9,13 @@ mod timer;
 mod commands;
 mod stats;
 mod sound;
+mod settings;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let timer_state = TimerState::new();
 
     tauri::Builder::default()
-        .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .manage(timer_state)
@@ -38,6 +38,9 @@ pub fn run() {
             commands::get_tag_stats,
             commands::export_data,
             commands::import_data,
+            commands::get_settings,
+            commands::save_settings,
+            commands::get_storage_locations,
             commands::play_completion_sound,
             commands::play_tick_sound,
         ])

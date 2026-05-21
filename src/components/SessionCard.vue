@@ -6,8 +6,8 @@
         <div class="flex gap-4 text-xs" style="color: var(--pixel-text-muted);">
           <span>{{ formatDate(session.startTime) }}</span>
           <span>{{ session.duration }}分钟</span>
-          <span v-if="session.completed" style="color: var(--pixel-primary);">✓ 完成</span>
-          <span v-else style="color: var(--pixel-secondary);">✗ 中断</span>
+          <span v-if="session.completed" style="color: var(--pixel-primary);">完成</span>
+          <span v-else style="color: var(--pixel-secondary);">中断</span>
         </div>
         <div v-if="session.tags.length > 0" class="flex gap-2 mt-2">
           <span
@@ -24,7 +24,7 @@
         class="pixel-button text-lg"
         style="color: var(--pixel-secondary);"
       >
-        🗑️
+        删除
       </button>
     </div>
   </div>
@@ -60,7 +60,7 @@ function handleDelete() {
 <style scoped>
 .tag-badge {
   border: 2px solid var(--pixel-secondary);
-  border-radius: 4px;
+  border-radius: 6px;
   color: var(--pixel-secondary);
 }
 </style>

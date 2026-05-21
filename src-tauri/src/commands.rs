@@ -1,6 +1,7 @@
 use crate::timer::{TimerState, start_timer, pause_timer, resume_timer, stop_timer};
-use crate::models::FocusSession;
+use crate::models::{AppSettings, FocusSession, StorageLocations};
 use crate::database;
+use crate::settings;
 use crate::stats::{self, DailyStats, TagStats};
 use crate::sound;
 use tauri::{State, Manager};
@@ -15,18 +16,49 @@ pub async fn start_session(
     tags: Vec<String>,
     _app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
-    start_timer(&state, duration, task, tags);
+    if !(1..=480).contains(&duration) {
+        return Err("专注时长必须在 1 到 480 分钟之间".to_string());
+    }
+
+    if state.start_time.lock().map_err(|e| e.to_string())?.is_some() {
+        return Err("当前已有一轮专注正在进行".to_string());
+    }
+
+    let normalized_task = task.trim().to_string();
+    let normalized_tags = tags
+        .into_iter()
+        .map(|tag| tag.trim().to_string())
+        .filter(|tag| !tag.is_empty())
+        .collect();
+
+    start_timer(&state, duration, normalized_task, normalized_tags);
     Ok(())
 }
 
 #[tauri::command]
 pub async fn pause_session(state: State<'_, TimerState>) -> Result<(), String> {
+    if state.start_time.lock().map_err(|e| e.to_string())?.is_none() {
+        return Err("没有正在进行的专注记录".to_string());
+    }
+
+    if !*state.is_running.lock().map_err(|e| e.to_string())? {
+        return Err("当前专注已经暂停".to_string());
+    }
+
     pause_timer(&state);
     Ok(())
 }
 
 #[tauri::command]
 pub async fn resume_session(state: State<'_, TimerState>) -> Result<(), String> {
+    if state.start_time.lock().map_err(|e| e.to_string())?.is_none() {
+        return Err("没有可以继续的专注记录".to_string());
+    }
+
+    if *state.is_running.lock().map_err(|e| e.to_string())? {
+        return Err("当前专注已经在运行".to_string());
+    }
+
     resume_timer(&state);
     Ok(())
 }
@@ -38,11 +70,25 @@ pub async fn stop_session(
     elapsed_seconds: i32,
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
-    let task = state.current_task.lock().unwrap().clone().unwrap_or_default();
-    let tags = state.current_tags.lock().unwrap().clone();
-    let start_time = state.start_time.lock().unwrap().clone().unwrap_or_default();
+    let start_time = state
+        .start_time
+        .lock()
+        .map_err(|e| e.to_string())?
+        .clone()
+        .ok_or_else(|| "没有正在进行的专注记录".to_string())?;
+    let task = state
+        .current_task
+        .lock()
+        .map_err(|e| e.to_string())?
+        .clone()
+        .unwrap_or_default();
+    let tags = state.current_tags.lock().map_err(|e| e.to_string())?.clone();
     let safe_elapsed = elapsed_seconds.max(0);
-    let duration_minutes = (safe_elapsed / 60).max(1);
+    let duration_minutes = if safe_elapsed == 0 {
+        0
+    } else {
+        (safe_elapsed + 59) / 60
+    };
 
     let session = FocusSession {
         id: Uuid::new_v4().to_string(),
@@ -126,6 +172,46 @@ pub async fn import_data(
 
     database::import_data(&db_path, &json_data)
         .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub async fn get_settings(app_handle: tauri::AppHandle) -> Result<AppSettings, String> {
+    let app_config_dir = app_handle.path().app_config_dir()
+        .map_err(|e| e.to_string())?;
+    let settings_path = settings::get_settings_path(app_config_dir);
+
+    settings::load_settings(&settings_path)
+}
+
+#[tauri::command]
+pub async fn save_settings(
+    settings: AppSettings,
+    app_handle: tauri::AppHandle,
+) -> Result<AppSettings, String> {
+    let app_config_dir = app_handle.path().app_config_dir()
+        .map_err(|e| e.to_string())?;
+    let settings_path = settings::get_settings_path(app_config_dir);
+
+    settings::save_settings(&settings_path, settings)
+}
+
+#[tauri::command]
+pub async fn get_storage_locations(
+    app_handle: tauri::AppHandle,
+) -> Result<StorageLocations, String> {
+    let app_data_dir = app_handle.path().app_data_dir()
+        .map_err(|e| e.to_string())?;
+    let app_config_dir = app_handle.path().app_config_dir()
+        .map_err(|e| e.to_string())?;
+    let database_path = database::get_db_path(app_data_dir.clone());
+    let settings_path = settings::get_settings_path(app_config_dir.clone());
+
+    Ok(StorageLocations {
+        database_path: database_path.display().to_string(),
+        settings_path: settings_path.display().to_string(),
+        app_data_dir: app_data_dir.display().to_string(),
+        app_config_dir: app_config_dir.display().to_string(),
+    })
 }
 
 #[tauri::command]

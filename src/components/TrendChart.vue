@@ -1,6 +1,6 @@
 <template>
   <div class="pixel-border p-4 bg-pixel-bg mb-6">
-    <h3 class="text-sm font-pixel text-pixel-green mb-4">📈 30天趋势</h3>
+    <h3 class="text-sm font-pixel text-pixel-green mb-4">30天趋势</h3>
     <div class="h-48">
       <canvas ref="chartCanvas"></canvas>
     </div>
@@ -9,28 +9,29 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import { invoke } from '@tauri-apps/api/core'
 import Chart from 'chart.js/auto'
 import { useSettingsStore } from '@/stores/settings'
+import { calculateDailyStats } from '@/utils/stats'
+import type { FocusSession } from '@/types/database'
 
 const chartCanvas = ref<HTMLCanvasElement>()
 let chartInstance: Chart | null = null
 const settingsStore = useSettingsStore()
 
 const props = defineProps<{
-  sessions: any[]
+  sessions: FocusSession[]
 }>()
 
 async function renderChart() {
   if (!chartCanvas.value) return
 
-  const stats = await invoke<any[]>('get_stats')
+  const stats = calculateDailyStats(props.sessions, 30)
 
-  const labels = stats.map((s: any) => {
+  const labels = stats.map(s => {
     const date = new Date(s.date)
     return `${date.getMonth() + 1}/${date.getDate()}`
   })
-  const data = stats.map((s: any) => Math.round(s.total_minutes / 60 * 10) / 10)
+  const data = stats.map(s => Math.round(s.total_minutes / 60 * 10) / 10)
 
   if (chartInstance) {
     chartInstance.destroy()
@@ -70,14 +71,14 @@ async function renderChart() {
           grid: { color: `${textMuted}33` },
           ticks: {
             color: textMuted,
-            font: { family: '"Press Start 2P"' }
+            font: { family: 'Georgia, "Times New Roman", "Songti SC", serif' }
           }
         },
         x: {
           grid: { display: false },
           ticks: {
             color: textMuted,
-            font: { family: '"Press Start 2P"', size: 8 }
+            font: { family: 'Georgia, "Times New Roman", "Songti SC", serif', size: 11 }
           }
         }
       }

@@ -29,9 +29,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { formatMinutes } from '@/utils/stats'
+import type { FocusSession } from '@/types/database'
 
 const props = defineProps<{
-  sessions: any[]
+  sessions: FocusSession[]
 }>()
 
 const now = new Date()

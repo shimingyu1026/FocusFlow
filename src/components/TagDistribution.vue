@@ -1,6 +1,6 @@
 <template>
   <div class="pixel-border p-4 bg-pixel-bg">
-    <h3 class="text-sm font-pixel text-pixel-green mb-4">🏷️ 标签分布</h3>
+    <h3 class="text-sm font-pixel text-pixel-green mb-4">标签分布</h3>
     <div class="h-64">
       <canvas ref="chartCanvas"></canvas>
     </div>
@@ -15,13 +15,14 @@ import { ref, onMounted, computed, watch } from 'vue'
 import Chart from 'chart.js/auto'
 import { calculateTagStats } from '@/utils/stats'
 import { useSettingsStore } from '@/stores/settings'
+import type { FocusSession } from '@/types/database'
 
 const chartCanvas = ref<HTMLCanvasElement>()
 let chartInstance: Chart | null = null
 const settingsStore = useSettingsStore()
 
 const props = defineProps<{
-  sessions: any[]
+  sessions: FocusSession[]
 }>()
 
 const tagStats = computed(() => calculateTagStats(props.sessions))
@@ -68,7 +69,7 @@ function renderChart() {
           position: 'right',
           labels: {
             color: muted,
-            font: { family: '"Press Start 2P"', size: 10 }
+            font: { family: 'Georgia, "Times New Roman", "Songti SC", serif', size: 12 }
           }
         }
       }

@@ -3,7 +3,7 @@
     <!-- Filter bar -->
     <div class="pixel-border p-4 mb-4 bg-pixel-bg">
       <div class="flex gap-4 items-center">
-        <span class="font-pixel text-sm text-pixel-green">筛选:</span>
+        <span class="font-pixel text-sm text-pixel-green">筛选</span>
         <button
           @click="filterTag = ''"
           class="pixel-button px-3 py-1 text-xs font-pixel"

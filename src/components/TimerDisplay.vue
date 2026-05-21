@@ -200,7 +200,7 @@ function selectDuration(duration: number) {
 .timer-layout {
   display: grid;
   grid-template-columns: minmax(280px, 360px) minmax(320px, 1fr);
-  gap: 18px;
+  gap: 16px;
   width: 100%;
   align-items: stretch;
 }
@@ -208,15 +208,11 @@ function selectDuration(duration: number) {
 .timer-panel {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 28px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
-    var(--pixel-panel-solid);
-  box-shadow:
-    0 24px 70px rgba(15, 23, 42, 0.32),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  padding: 20px;
+  border: 1px solid var(--surface-line);
+  border-radius: 8px;
+  background: var(--pixel-panel-solid);
+  box-shadow: none;
+  padding: 24px;
 }
 
 .timer-panel--inputs {
@@ -244,20 +240,23 @@ function selectDuration(duration: number) {
 .timer-kicker {
   display: inline-flex;
   width: fit-content;
-  border-radius: 999px;
-  background: rgba(20, 184, 166, 0.12);
-  padding: 6px 10px;
-  color: var(--pixel-primary);
-  font-size: 0.95rem;
-  letter-spacing: 0.08em;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.18);
+  padding: 7px 10px;
+  color: var(--pixel-text-muted);
+  font-size: 0.74rem;
+  font-weight: 760;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .timer-title {
   margin: 0;
   color: var(--pixel-text);
-  font-size: 1.55rem;
-  line-height: 0.95;
+  font-family: var(--app-font-serif);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.08;
 }
 
 .timer-field-group {
@@ -268,25 +267,25 @@ function selectDuration(duration: number) {
 
 .timer-label {
   color: var(--pixel-text-muted);
-  font-size: 1rem;
-  letter-spacing: 0.04em;
+  font-size: 0.86rem;
+  font-weight: 650;
 }
 
 .timer-input {
   width: 100%;
-  border: 1px solid rgba(148, 163, 184, 0.22);
-  border-radius: 18px;
-  background: rgba(15, 23, 42, 0.18);
-  padding: 14px 16px;
+  border: 1px solid var(--surface-line);
+  border-radius: 7px;
+  background: rgba(0, 0, 0, 0.16);
+  padding: 13px 14px;
   color: var(--pixel-text);
-  font-family: 'VT323', monospace;
-  font-size: 1.35rem;
+  font-family: var(--app-font-serif);
+  font-size: 1rem;
   outline: none;
 }
 
 .timer-input:focus {
-  border-color: rgba(20, 184, 166, 0.55);
-  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.12);
+  border-color: var(--pixel-primary-dark);
+  box-shadow: 0 0 0 3px var(--pixel-glow);
 }
 
 .timer-presets {
@@ -304,7 +303,7 @@ function selectDuration(duration: number) {
 
 .timer-preset-note {
   color: var(--pixel-text-muted);
-  font-size: 0.95rem;
+  font-size: 0.82rem;
 }
 
 .timer-duration-grid {
@@ -315,14 +314,14 @@ function selectDuration(duration: number) {
 
 .timer-duration-button {
   display: flex;
-  min-height: 76px;
+  min-height: 74px;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
   gap: 4px;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 20px;
-  background: rgba(15, 23, 42, 0.14);
+  border: 1px solid var(--surface-line);
+  border-radius: 7px;
+  background: rgba(0, 0, 0, 0.12);
   color: var(--pixel-text);
   cursor: pointer;
   padding: 14px 16px;
@@ -331,26 +330,26 @@ function selectDuration(duration: number) {
 
 .timer-duration-button:hover {
   transform: translateY(-2px);
-  border-color: rgba(20, 184, 166, 0.4);
+  border-color: var(--surface-line-strong);
 }
 
 .timer-duration-button--active {
-  border-color: rgba(20, 184, 166, 0.58);
-  background:
-    linear-gradient(135deg, rgba(20, 184, 166, 0.16), rgba(249, 115, 22, 0.12)),
-    rgba(15, 23, 42, 0.18);
-  box-shadow: inset 0 0 0 1px rgba(20, 184, 166, 0.18);
+  border-color: var(--pixel-primary-dark);
+  background: rgba(0, 0, 0, 0.24);
+  box-shadow: inset 0 0 0 1px var(--surface-line);
 }
 
 .timer-duration-value {
   color: var(--pixel-text);
-  font-size: 2rem;
+  font-family: var(--app-font-serif);
+  font-size: 1.9rem;
+  font-weight: 700;
   line-height: 1;
 }
 
 .timer-duration-unit {
   color: var(--pixel-text-muted);
-  font-size: 1rem;
+  font-size: 0.88rem;
 }
 
 .timer-inline-meta {
@@ -362,13 +361,7 @@ function selectDuration(duration: number) {
 }
 
 .timer-ambient {
-  position: absolute;
-  inset: 12% 14% auto;
-  height: 180px;
-  border-radius: 999px;
-  background: radial-gradient(circle, var(--pixel-glow), transparent 70%);
-  filter: blur(28px);
-  pointer-events: none;
+  display: none;
 }
 
 .timer-circle-container {
@@ -383,11 +376,11 @@ function selectDuration(duration: number) {
   inset: 0;
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 0 12px rgba(20, 184, 166, 0.18));
+  filter: none;
 }
 
 .progress-ring-track {
-  stroke: rgba(148, 163, 184, 0.12);
+  stroke: var(--surface-line);
 }
 
 .progress-circle {
@@ -402,56 +395,54 @@ function selectDuration(duration: number) {
   width: 230px;
   height: 230px;
   transform: translate(-50%, -50%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--surface-line);
   border-radius: 50%;
-  background:
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 58%),
-    rgba(20, 24, 52, 0.92);
+  background: rgba(0, 0, 0, 0.18);
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
-    inset 0 -24px 60px rgba(15, 23, 42, 0.35);
+  box-shadow: none;
 }
 
 .timer-status-pill {
   margin-bottom: 14px;
-  border-radius: 999px;
+  border-radius: 6px;
   padding: 6px 12px;
-  font-size: 1rem;
-  letter-spacing: 0.06em;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .timer-status-pill--active {
-  background: rgba(20, 184, 166, 0.14);
+  background: rgba(0, 0, 0, 0.22);
   color: var(--pixel-primary);
 }
 
 .timer-status-pill--paused {
-  background: rgba(250, 204, 21, 0.16);
+  background: rgba(215, 181, 109, 0.14);
   color: var(--pixel-warning);
 }
 
 .timer-status-pill--idle {
-  background: rgba(249, 115, 22, 0.14);
+  background: rgba(199, 143, 90, 0.16);
   color: var(--pixel-secondary);
 }
 
 .timer-text {
   margin: 0;
   color: var(--pixel-text);
-  font-size: 4.6rem;
-  line-height: 0.95;
-  letter-spacing: 0.06em;
-  text-shadow: 0 0 18px rgba(20, 184, 166, 0.22);
+  font-family: var(--app-font-serif);
+  font-size: 4.1rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  text-shadow: none;
 }
 
 .timer-support {
   margin: 12px 24px 0;
   color: var(--pixel-text-muted);
-  font-size: 1rem;
-  line-height: 1.1;
+  font-size: 0.94rem;
+  line-height: 1.35;
   text-align: center;
 }
 
@@ -479,24 +470,24 @@ function selectDuration(duration: number) {
   }
 
   .timer-circle-container {
-    width: 300px;
-    height: 300px;
+    width: 280px;
+    height: 280px;
   }
 
   .timer-inner-circle {
-    width: 244px;
-    height: 244px;
+    width: 226px;
+    height: 226px;
   }
 
   .timer-text {
-    font-size: 5rem;
+    font-size: 4rem;
   }
 }
 
 @media (max-width: 420px) {
   .timer-panel {
     padding: 18px;
-    border-radius: 24px;
+    border-radius: 8px;
   }
 
   .timer-title {
