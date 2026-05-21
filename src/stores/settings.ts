@@ -6,6 +6,8 @@ import { isDesktopRuntime } from '@/utils/runtime'
 export type ThemeMode = 'dark' | 'light'
 export type ThemeAccent = 'ocean' | 'sunset' | 'arcade'
 export type CelebrationStyle = 'confetti' | 'stars' | 'fireworks'
+const FIXED_THEME_MODE: ThemeMode = 'dark'
+const FIXED_THEME_ACCENT: ThemeAccent = 'ocean'
 
 export interface AppSettingsSnapshot {
   soundEnabled: boolean
@@ -49,10 +51,8 @@ export const useSettingsStore = defineStore('settings', () => {
     defaultDuration.value = settings.defaultDuration && settings.defaultDuration > 0
       ? Math.min(settings.defaultDuration, 480)
       : 25
-    themeMode.value = settings.themeMode === 'light' ? 'light' : 'dark'
-    themeAccent.value = ['ocean', 'sunset', 'arcade'].includes(settings.themeAccent ?? '')
-      ? settings.themeAccent as ThemeAccent
-      : 'ocean'
+    themeMode.value = FIXED_THEME_MODE
+    themeAccent.value = FIXED_THEME_ACCENT
     celebrationStyle.value = ['confetti', 'stars', 'fireworks'].includes(settings.celebrationStyle ?? '')
       ? settings.celebrationStyle as CelebrationStyle
       : 'confetti'
@@ -120,14 +120,6 @@ export const useSettingsStore = defineStore('settings', () => {
     soundVolume.value = Math.max(0, Math.min(1, volume))
   }
 
-  function setThemeMode(mode: ThemeMode) {
-    themeMode.value = mode
-  }
-
-  function setThemeAccent(accent: ThemeAccent) {
-    themeAccent.value = accent
-  }
-
   function setCelebrationStyle(style: CelebrationStyle) {
     celebrationStyle.value = style
   }
@@ -143,8 +135,6 @@ export const useSettingsStore = defineStore('settings', () => {
     loadSettings,
     toggleSound,
     setVolume,
-    setThemeMode,
-    setThemeAccent,
     setCelebrationStyle,
   }
 })
