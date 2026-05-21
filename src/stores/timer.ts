@@ -68,7 +68,7 @@ export const useTimerStore = defineStore('timer', () => {
 
   async function stopSession(completed: boolean, elapsedSeconds: number) {
     if (isDesktopRuntime()) {
-      await invoke('stop_session', { completed, elapsed_seconds: elapsedSeconds })
+      await invoke('stop_session', { completed, elapsedSeconds })
     } else if (startedAt.value) {
       const safeElapsed = Math.max(0, elapsedSeconds)
       const session: FocusSession = {
