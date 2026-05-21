@@ -19,7 +19,7 @@ Branch: `codex/focusflow-polish-fixes`
 | `cargo test --manifest-path src-tauri/Cargo.toml` | Passed, 7 tests |
 | `cargo check --manifest-path src-tauri/Cargo.toml` | Passed |
 | `pnpm tauri info` | Passed, reports CSP enabled and dependency update notices |
-| `pnpm tauri build --bundles app` | Passed, generated `src-tauri/target/release/bundle/macos/FocusFlow.app` |
+| `pnpm run tauri build` | Passed, generated `src-tauri/target/release/bundle/macos/FocusFlow.app` |
 
 ## Manual / Browser Verification
 
@@ -32,9 +32,9 @@ Branch: `codex/focusflow-polish-fixes`
   - `/tmp/focusflow-polished-desktop.png`
   - `/tmp/focusflow-polished-mobile.png`
 
-## Known Packaging Note
+## Packaging Note
 
-`pnpm run tauri build` built the release executable and `.app`, then failed during the DMG bundling step with:
+The original `"targets": "all"` configuration built the release executable and `.app`, then failed during the DMG bundling step with:
 
 ```text
 failed to bundle project error running bundle_dmg.sh
@@ -46,4 +46,4 @@ Running the generated `bundle_dmg.sh` directly without arguments reports:
 Not enough arguments. Run 'create-dmg --help' for help.
 ```
 
-The app bundle target was verified separately with `pnpm tauri build --bundles app`.
+The default bundle target is now `["app"]`, so the project-level `pnpm run tauri build` command completes successfully on this machine. DMG packaging can be restored later with a dedicated DMG configuration pass.
