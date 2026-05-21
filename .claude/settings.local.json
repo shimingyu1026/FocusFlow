@@ -10,7 +10,14 @@
       "Bash(git init:*)",
       "Bash(pnpm install)",
       "Bash(pnpm run tauri build:*)",
-      "Bash(pnpm tauri icon:*)"
+      "Bash(pnpm tauri icon:*)",
+      "mcp__web-search-prime__webSearchPrime",
+      "mcp__web-reader__webReader",
+      "Skill(superpowers:subagent-driven-development)",
+      "Bash(npm run dev:*)",
+      "Bash(pkill:*)",
+      "Bash(git tag:*)",
+      "Bash(tree:*)"
     ]
   }
 }
