@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import AppHeader from '@/components/AppHeader.vue'
 import AppNav from '@/components/AppNav.vue'
@@ -38,6 +38,7 @@ const viewportSize = ref({ width: 0, height: 0 })
 const contentSize = ref({ width: 0, height: 0 })
 let viewportObserver: ResizeObserver | null = null
 let contentObserver: ResizeObserver | null = null
+let measureFrame = 0
 
 const isTimerRoute = computed(() => route.name === 'timer')
 
@@ -56,7 +57,7 @@ const appScale = computed(() => {
   return Math.min(viewportWidth / contentWidth, viewportHeight / contentHeight, 1)
 })
 
-const shellStyle = computed(() => {
+const shellStyle = computed((): Record<string, string> => {
   const scale = appScale.value
   const { width, height } = contentSize.value
 
@@ -74,15 +75,49 @@ const contentStyle = computed(() => ({
   transform: `scale(${appScale.value})`,
 }))
 
-onMounted(() => {
-  if (!viewportRef.value) {
-    return
-  }
-
+function measureViewport() {
+  if (!viewportRef.value) return
   viewportSize.value = {
     width: viewportRef.value.clientWidth,
     height: viewportRef.value.clientHeight,
   }
+}
+
+function measureContent() {
+  if (!contentRef.value) return
+  contentSize.value = {
+    width: contentRef.value.offsetWidth,
+    height: contentRef.value.offsetHeight,
+  }
+}
+
+function scheduleMeasure() {
+  cancelAnimationFrame(measureFrame)
+  measureFrame = requestAnimationFrame(() => {
+    measureViewport()
+    measureContent()
+  })
+}
+
+function observeContent() {
+  contentObserver?.disconnect()
+  contentObserver = null
+
+  if (!contentRef.value) return
+
+  measureContent()
+  contentObserver = new ResizeObserver(scheduleMeasure)
+  contentObserver.observe(contentRef.value)
+}
+
+onMounted(async () => {
+  if (!viewportRef.value) {
+    return
+  }
+
+  await nextTick()
+  measureViewport()
+  observeContent()
 
   viewportObserver = new ResizeObserver(entries => {
     const entry = entries[0]
@@ -95,27 +130,17 @@ onMounted(() => {
   })
 
   viewportObserver.observe(viewportRef.value)
+  scheduleMeasure()
+})
 
-  if (contentRef.value) {
-    contentSize.value = {
-      width: contentRef.value.offsetWidth,
-      height: contentRef.value.offsetHeight,
-    }
-
-    contentObserver = new ResizeObserver(() => {
-      if (!contentRef.value) return
-
-      contentSize.value = {
-        width: contentRef.value.offsetWidth,
-        height: contentRef.value.offsetHeight,
-      }
-    })
-
-    contentObserver.observe(contentRef.value)
-  }
+watch(() => route.fullPath, async () => {
+  await nextTick()
+  observeContent()
+  scheduleMeasure()
 })
 
 onUnmounted(() => {
+  cancelAnimationFrame(measureFrame)
   viewportObserver?.disconnect()
   contentObserver?.disconnect()
 })
