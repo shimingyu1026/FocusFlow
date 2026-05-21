@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 import { invoke } from '@tauri-apps/api/core'
+import { isDesktopRuntime } from '@/utils/runtime'
 
 export type ThemeMode = 'dark' | 'light'
 export type ThemeAccent = 'ocean' | 'sunset' | 'arcade'
@@ -16,7 +17,6 @@ export interface AppSettingsSnapshot {
 }
 
 const SETTINGS_STORAGE_KEY = 'focusflow-settings'
-const isDesktopRuntime = () => typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
 
 export const useSettingsStore = defineStore('settings', () => {
   const soundEnabled = ref(true)

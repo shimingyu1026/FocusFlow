@@ -159,11 +159,13 @@
 import { invoke } from '@tauri-apps/api/core'
 import { computed, onMounted, ref } from 'vue'
 import { useSettingsStore, type CelebrationStyle, type ThemeAccent, type ThemeMode } from '@/stores/settings'
+import { useTimerStore } from '@/stores/timer'
 import ExportButton from '@/components/ExportButton.vue'
 import ImportButton from '@/components/ImportButton.vue'
 import { emitSessionsUpdated } from '@/utils/sessionEvents'
 
 const settingsStore = useSettingsStore()
+const timerStore = useTimerStore()
 
 interface StorageLocations {
   databasePath: string
@@ -202,7 +204,11 @@ function handleVolumeChange(event: Event) {
 }
 
 async function testSound() {
-  await invoke('play_completion_sound')
+  try {
+    await invoke('play_completion_sound')
+  } catch (error) {
+    alert('❌ 测试音效失败: ' + error)
+  }
 }
 
 async function loadStorageLocations() {
@@ -225,7 +231,7 @@ async function handleClearData() {
   if (doubleConfirm !== 'DELETE') return
 
   try {
-    const deleted = await invoke<number>('clear_all_data')
+    const deleted = await timerStore.clearAllData()
     emitSessionsUpdated()
     alert(`✅ 已清除 ${deleted} 条记录`)
   } catch (error) {

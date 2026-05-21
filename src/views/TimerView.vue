@@ -47,6 +47,7 @@ import TimerDisplay from '@/components/TimerDisplay.vue'
 import TimerControls from '@/components/TimerControls.vue'
 import CompletionAnimation from '@/components/CompletionAnimation.vue'
 import { emitSessionsUpdated } from '@/utils/sessionEvents'
+import { isDesktopRuntime } from '@/utils/runtime'
 
 const timerStore = useTimerStore()
 const settingsStore = useSettingsStore()
@@ -104,9 +105,15 @@ async function handleStop(completed: boolean) {
     timerInterval = null
   }
 
-  if (completed && settingsStore.soundEnabled) {
-    await invoke('play_completion_sound')
-    // Show completion animation instead of alert
+  if (completed) {
+    if (settingsStore.soundEnabled && isDesktopRuntime()) {
+      try {
+        await invoke('play_completion_sound')
+      } catch (error) {
+        console.warn('Completion sound failed', error)
+      }
+    }
+
     todayCompletedCount.value++
     showCompletion.value = true
   }

@@ -9,28 +9,29 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import { invoke } from '@tauri-apps/api/core'
 import Chart from 'chart.js/auto'
 import { useSettingsStore } from '@/stores/settings'
+import { calculateDailyStats } from '@/utils/stats'
+import type { FocusSession } from '@/types/database'
 
 const chartCanvas = ref<HTMLCanvasElement>()
 let chartInstance: Chart | null = null
 const settingsStore = useSettingsStore()
 
 const props = defineProps<{
-  sessions: any[]
+  sessions: FocusSession[]
 }>()
 
 async function renderChart() {
   if (!chartCanvas.value) return
 
-  const stats = await invoke<any[]>('get_stats')
+  const stats = calculateDailyStats(props.sessions, 30)
 
-  const labels = stats.map((s: any) => {
+  const labels = stats.map(s => {
     const date = new Date(s.date)
     return `${date.getMonth() + 1}/${date.getDate()}`
   })
-  const data = stats.map((s: any) => Math.round(s.total_minutes / 60 * 10) / 10)
+  const data = stats.map(s => Math.round(s.total_minutes / 60 * 10) / 10)
 
   if (chartInstance) {
     chartInstance.destroy()

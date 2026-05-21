@@ -38,3 +38,33 @@ export function calculateTagStats(sessions: FocusSession[]): TagStats[] {
     percentage: totalAll > 0 ? (total_minutes / totalAll) * 100 : 0
   }))
 }
+
+export function calculateDailyStats(sessions: FocusSession[], days = 30): DailyStats[] {
+  const stats = new Map<string, { total_minutes: number; count: number }>()
+  const now = new Date()
+
+  for (let i = days - 1; i >= 0; i--) {
+    const date = new Date(now)
+    date.setDate(now.getDate() - i)
+    const dateKey = date.toISOString().slice(0, 10)
+    stats.set(dateKey, { total_minutes: 0, count: 0 })
+  }
+
+  sessions.forEach(session => {
+    const date = new Date(session.startTime)
+    if (Number.isNaN(date.getTime())) return
+
+    const dateKey = date.toISOString().slice(0, 10)
+    const current = stats.get(dateKey)
+    if (!current) return
+
+    current.total_minutes += session.duration
+    current.count += 1
+  })
+
+  return Array.from(stats.entries()).map(([date, value]) => ({
+    date,
+    total_minutes: value.total_minutes,
+    count: value.count,
+  }))
+}

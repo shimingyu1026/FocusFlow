@@ -15,13 +15,14 @@ import { ref, onMounted, computed, watch } from 'vue'
 import Chart from 'chart.js/auto'
 import { calculateTagStats } from '@/utils/stats'
 import { useSettingsStore } from '@/stores/settings'
+import type { FocusSession } from '@/types/database'
 
 const chartCanvas = ref<HTMLCanvasElement>()
 let chartInstance: Chart | null = null
 const settingsStore = useSettingsStore()
 
 const props = defineProps<{
-  sessions: any[]
+  sessions: FocusSession[]
 }>()
 
 const tagStats = computed(() => calculateTagStats(props.sessions))
