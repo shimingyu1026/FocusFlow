@@ -1,136 +1,133 @@
-# FocusFlow - 复古像素风番茄钟
+# FocusFlow - 暖色极简番茄钟
 
-一款跨平台的番茄钟应用，拥有现代化复古像素风格的界面。
+FocusFlow 是一款基于 Tauri 2 和 Vue 3 的跨平台桌面番茄钟应用。界面采用暖黑背景、棕色卡片、克制边线和全局衬线字体：英文与数字优先使用 Georgia / Times New Roman，中文使用 Songti SC / STSong 等宋体 fallback。
 
 ![Version](https://img.shields.io/badge/version-v0.2.0-blue)
 ![Vue](https://img.shields.io/badge/Vue-3.4-42b883)
-![Tauri](https://img.shields.io/badge/Tauri-2.0-FFC131)
+![Tauri](https://img.shields.io/badge/Tauri-2.x-FFC131)
 
-## ✨ 特性
+## 功能
 
-### 核心功能
-- ⏱️ 自定义专注时长（15/25/45/60 分钟）
-- 🎯 SVG 进度环实时显示剩余时间
-- 🏷️ 任务标签系统
-- 📝 历史记录管理
-- 📊 统计图表展示
-- 🔔 8-bit 风格声音提醒
-- 💾 数据导出/导入
-- 🖥️ 跨平台支持（Windows/macOS/Linux）
+- 自定义专注时长：15 / 25 / 45 / 60 分钟
+- 任务名称与标签记录
+- SVG 进度环与 100ms 本地倒计时
+- 暂停、继续、停止与完成动画
+- 历史记录、统计卡片、30 天趋势图、标签分布图
+- 数据导出 / 导入
+- 主题模式、强调色、音效、默认时长、完成动画样式设置
+- Web 预览 fallback：不在 Tauri 环境中也可以试用计时、历史、统计、导入导出
+- 本地优先：无网络同步，数据只保存在本机
 
-### v0.2.0 新特性
-- 🎨 **现代化像素风格 UI**
-  - VT323 优化像素字体，解决文字溢出问题
-  - 电光青 + 珊瑚色现代配色方案
-  - 3D 立体按钮效果（悬停上浮，点击下沉）
-- 📱 **完全响应式设计**
-  - 自动缩放适配不同窗口尺寸
-  - 优化的移动端和平板体验
-- 🎉 **优雅的完成动画**
-  - 彩纸粒子庆祝效果
-  - 随机激励消息
-  - 每日完成次数统计
-- ⚡ **性能优化**
-  - GPU 加速动画（60fps）
-  - 流畅的进度环过渡效果
-- ⌨️ **键盘快捷键**
-  - `Space`: 开始/暂停/继续计时
-  - `Escape`: 停止计时
+## 运行
 
-## 🛠️ 技术栈
-
-### 前端框架
-- **Vue 3** - 渐进式 JavaScript 框架（Composition API）
-- **TypeScript** - 类型安全的 JavaScript
-- **Tailwind CSS** - 原子化 CSS 框架
-- **Chart.js** - 数据可视化图表库
-
-### 桌面应用
-- **Tauri 2.x** - 跨平台桌面应用框架
-- **SQLite** - 轻量级本地数据库
-
-### 开发工具
-- **Vite** - 下一代前端构建工具
-- **pnpm** - 快速的、节省磁盘空间的包管理器
-
-## 🚀 开发
+安装依赖：
 
 ```bash
-# 安装依赖
 pnpm install
+```
 
-# 开发模式（Web）
+开发模式：
+
+```bash
+# Web 预览，端口 5173
 pnpm run dev
 
-# 开发模式（桌面应用）
+# 桌面应用开发模式
 pnpm run tauri dev
 ```
 
-## 📦 构建
+打开当前已构建的 macOS 应用：
 
 ```bash
-# 构建桌面应用
-pnpm run tauri build
-
-# 构建产物位于 src-tauri/target/release/
+open src-tauri/target/release/bundle/macos/FocusFlow.app
 ```
 
-## 🎮 快捷键
+## 构建
+
+```bash
+pnpm run tauri build
+```
+
+默认构建 macOS `.app` bundle：
+
+```text
+src-tauri/target/release/bundle/macos/FocusFlow.app
+```
+
+说明：当前默认 bundle target 为 `["app"]`，不默认生成 DMG。此前 `targets: "all"` 在本机 DMG bundling 阶段会失败，因此先保证项目级 `pnpm run tauri build` 稳定产出 `.app`。
+
+## 测试
+
+```bash
+# 前端类型检查 + 生产构建
+pnpm run build
+
+# Rust 单元测试
+cargo test --manifest-path src-tauri/Cargo.toml
+
+# Rust 编译检查
+cargo check --manifest-path src-tauri/Cargo.toml
+
+# Tauri 环境信息
+pnpm tauri info
+```
+
+最近的验证记录：
+
+- `docs/test-results/2026-05-21-polish-and-hardening.md`
+
+## 数据位置
+
+FocusFlow 使用 Tauri 的系统应用目录：
+
+- 专注记录：SQLite 数据库 `focusflow.db`，位于 `app_data_dir`
+- 用户设置：`settings.json`，位于 `app_config_dir`
+- 设置页会显示当前机器上的实际数据库路径和设置文件路径
+
+macOS 上应用 identifier 为：
+
+```text
+com.focusflow.desktop
+```
+
+Web 预览模式使用浏览器 `localStorage` 作为 fallback：
+
+- `focusflow-sessions`
+- `focusflow-settings`
+
+## 快捷键
 
 | 按键 | 功能 |
-|------|------|
-| `Space` | 开始/暂停/继续计时 |
-| `Escape` | 停止计时 |
+| --- | --- |
+| `Space` | 开始 / 暂停 / 继续 |
+| `Escape` | 停止当前计时 |
 
-## 💾 数据备份
+## 技术栈
 
-应用数据会自动保存到本地。你可以通过设置页面导出数据作为备份。
+| 层级 | 技术 |
+| --- | --- |
+| 前端 | Vue 3, TypeScript, Pinia, Vue Router |
+| 样式 | Tailwind CSS, CSS variables |
+| 图表 | Chart.js, vue-chartjs |
+| 桌面 | Tauri 2.x |
+| 后端 | Rust |
+| 数据库 | SQLite, rusqlite bundled |
+| 构建 | Vite, pnpm |
 
-## 📈 版本历史
+## 项目结构
 
-### v0.2.0 - Modern Pixel UI (2026-01-21)
-- 🎨 全面升级为现代化像素风格
-- ✨ 修复计时器数字溢出问题
-- 📱 实现完全响应式布局
-- 🎯 添加 SVG 进度环动画
-- 🎉 新增完成庆祝动画
-- ⚡ 性能优化（GPU 加速）
+```text
+src/                 Vue 前端源码
+src/components/      可复用组件
+src/views/           页面级组件
+src/stores/          Pinia stores
+src/utils/           统计、运行时判断、事件工具
+src-tauri/src/       Rust 后端命令、数据库、设置、计时器、音效
+src-tauri/capabilities/
+                     Tauri 权限配置
+docs/test-results/   测试和验证记录
+```
 
-**详细变更**: [docs/changelog/ui-redesign.md](docs/changelog/ui-redesign.md)
+## 许可证
 
-### v0.1.0 - Initial Release (2026-01-20)
-- ⏱️ 基础番茄钟功能
-- 📊 统计和历史记录
-- 💾 数据导入/导出
-
-## 🙏 致谢
-
-本项目的 v0.2.0 版本 UI 现代化重构由 **GLM** 与 **Claude Code** 协作完成。
-
-- **GLM (智谱 AI)** - 提供 AI 辅助编程能力
-- **Claude Code** - Anthropic 出品的 AI 编程助手
-  - 使用 Superpowers 工作流进行系统化开发
-  - 采用 Subagent-Driven Development 模式确保代码质量
-  - 通过 TDD (Test-Driven Development) 方法保证功能可靠性
-
-**开发亮点**:
-- 📋 完整的设计规范和实施计划（1090 行文档）
-- 🔍 代码质量审查流程（规范审查 + 质量审查）
-- ✅ 全面的测试覆盖（响应式、功能、性能测试）
-- 📚 详尽的文档记录（变更日志、测试报告）
-
-## 📄 许可证
-
-MIT License - 详见 [LICENSE](LICENSE) 文件
-
-## 🤝 贡献
-
-欢迎提交 Issue 和 Pull Request！
-
-## 📮 联系方式
-
-如有问题或建议，欢迎通过 GitHub Issues 联系。
-
----
-
-**FocusFlow** - 让专注更简单 🎯⏱️
+MIT License
