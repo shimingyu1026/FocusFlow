@@ -9,6 +9,7 @@ mod timer;
 mod commands;
 mod stats;
 mod sound;
+mod settings;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -38,6 +39,9 @@ pub fn run() {
             commands::get_tag_stats,
             commands::export_data,
             commands::import_data,
+            commands::get_settings,
+            commands::save_settings,
+            commands::get_storage_locations,
             commands::play_completion_sound,
             commands::play_tick_sound,
         ])

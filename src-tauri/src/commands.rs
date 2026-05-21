@@ -1,6 +1,7 @@
 use crate::timer::{TimerState, start_timer, pause_timer, resume_timer, stop_timer};
-use crate::models::FocusSession;
+use crate::models::{AppSettings, FocusSession, StorageLocations};
 use crate::database;
+use crate::settings;
 use crate::stats::{self, DailyStats, TagStats};
 use crate::sound;
 use tauri::{State, Manager};
@@ -171,6 +172,46 @@ pub async fn import_data(
 
     database::import_data(&db_path, &json_data)
         .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub async fn get_settings(app_handle: tauri::AppHandle) -> Result<AppSettings, String> {
+    let app_config_dir = app_handle.path().app_config_dir()
+        .map_err(|e| e.to_string())?;
+    let settings_path = settings::get_settings_path(app_config_dir);
+
+    settings::load_settings(&settings_path)
+}
+
+#[tauri::command]
+pub async fn save_settings(
+    settings: AppSettings,
+    app_handle: tauri::AppHandle,
+) -> Result<AppSettings, String> {
+    let app_config_dir = app_handle.path().app_config_dir()
+        .map_err(|e| e.to_string())?;
+    let settings_path = settings::get_settings_path(app_config_dir);
+
+    settings::save_settings(&settings_path, settings)
+}
+
+#[tauri::command]
+pub async fn get_storage_locations(
+    app_handle: tauri::AppHandle,
+) -> Result<StorageLocations, String> {
+    let app_data_dir = app_handle.path().app_data_dir()
+        .map_err(|e| e.to_string())?;
+    let app_config_dir = app_handle.path().app_config_dir()
+        .map_err(|e| e.to_string())?;
+    let database_path = database::get_db_path(app_data_dir.clone());
+    let settings_path = settings::get_settings_path(app_config_dir.clone());
+
+    Ok(StorageLocations {
+        database_path: database_path.display().to_string(),
+        settings_path: settings_path.display().to_string(),
+        app_data_dir: app_data_dir.display().to_string(),
+        app_config_dir: app_config_dir.display().to_string(),
+    })
 }
 
 #[tauri::command]

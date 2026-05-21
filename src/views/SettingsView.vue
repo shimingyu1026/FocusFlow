@@ -111,6 +111,17 @@
       >
         🗑️ 清除所有数据
       </button>
+
+      <div v-if="storageLocations" class="mt-5 space-y-3 text-xs">
+        <div>
+          <p class="font-pixel text-pixel-text-muted mb-1">专注记录数据库</p>
+          <p class="break-all font-mono text-pixel-text">{{ storageLocations.databasePath }}</p>
+        </div>
+        <div>
+          <p class="font-pixel text-pixel-text-muted mb-1">设置缓存文件</p>
+          <p class="break-all font-mono text-pixel-text">{{ storageLocations.settingsPath }}</p>
+        </div>
+      </div>
     </div>
 
     <!-- Celebration settings -->
@@ -146,13 +157,22 @@
 
 <script setup lang="ts">
 import { invoke } from '@tauri-apps/api/core'
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useSettingsStore, type CelebrationStyle, type ThemeAccent, type ThemeMode } from '@/stores/settings'
 import ExportButton from '@/components/ExportButton.vue'
 import ImportButton from '@/components/ImportButton.vue'
 import { emitSessionsUpdated } from '@/utils/sessionEvents'
 
 const settingsStore = useSettingsStore()
+
+interface StorageLocations {
+  databasePath: string
+  settingsPath: string
+  appDataDir: string
+  appConfigDir: string
+}
+
+const storageLocations = ref<StorageLocations | null>(null)
 
 const themeModeOptions: Array<{ label: string; value: ThemeMode }> = [
   { label: '暗色', value: 'dark' },
@@ -185,6 +205,14 @@ async function testSound() {
   await invoke('play_completion_sound')
 }
 
+async function loadStorageLocations() {
+  try {
+    storageLocations.value = await invoke<StorageLocations>('get_storage_locations')
+  } catch {
+    storageLocations.value = null
+  }
+}
+
 function handleImported() {
   emitSessionsUpdated()
 }
@@ -204,4 +232,8 @@ async function handleClearData() {
     alert('❌ 清除失败: ' + error)
   }
 }
+
+onMounted(() => {
+  loadStorageLocations()
+})
 </script>
