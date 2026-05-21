@@ -149,7 +149,7 @@
     <div class="pixel-border p-6 bg-pixel-bg text-center">
       <h3 class="text-lg font-pixel text-pixel-green mb-2">FOCUS FLOW</h3>
       <p class="text-xs font-pixel text-pixel-text-muted mb-4">版本 0.2.0</p>
-      <p class="text-xs font-pixel text-pixel-text-muted">复古像素风番茄钟</p>
+      <p class="text-xs font-pixel text-pixel-text-muted">暖色极简番茄钟</p>
       <p class="text-xs font-pixel text-pixel-text-muted mt-2">保持专注，持续前进。</p>
     </div>
   </div>

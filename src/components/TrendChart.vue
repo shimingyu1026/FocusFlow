@@ -1,6 +1,6 @@
 <template>
   <div class="pixel-border p-4 bg-pixel-bg mb-6">
-    <h3 class="text-sm font-pixel text-pixel-green mb-4">📈 30天趋势</h3>
+    <h3 class="text-sm font-pixel text-pixel-green mb-4">30天趋势</h3>
     <div class="h-48">
       <canvas ref="chartCanvas"></canvas>
     </div>
