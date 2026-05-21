@@ -69,7 +69,7 @@ function renderChart() {
           position: 'right',
           labels: {
             color: muted,
-            font: { family: 'ui-sans-serif, system-ui, sans-serif', size: 12 }
+            font: { family: 'Georgia, "Times New Roman", "Songti SC", serif', size: 12 }
           }
         }
       }

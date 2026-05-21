@@ -278,7 +278,7 @@ function selectDuration(duration: number) {
   background: rgba(0, 0, 0, 0.16);
   padding: 13px 14px;
   color: var(--pixel-text);
-  font-family: var(--app-font-sans);
+  font-family: var(--app-font-serif);
   font-size: 1rem;
   outline: none;
 }

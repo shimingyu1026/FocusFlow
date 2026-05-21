@@ -71,14 +71,14 @@ async function renderChart() {
           grid: { color: `${textMuted}33` },
           ticks: {
             color: textMuted,
-            font: { family: 'ui-sans-serif, system-ui, sans-serif' }
+            font: { family: 'Georgia, "Times New Roman", "Songti SC", serif' }
           }
         },
         x: {
           grid: { display: false },
           ticks: {
             color: textMuted,
-            font: { family: 'ui-sans-serif, system-ui, sans-serif', size: 11 }
+            font: { family: 'Georgia, "Times New Roman", "Songti SC", serif', size: 11 }
           }
         }
       }

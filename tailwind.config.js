@@ -19,7 +19,7 @@ export default {
         'pixel-pink': 'var(--pixel-secondary)',
       },
       fontFamily: {
-        'pixel': ['var(--app-font-sans)'],
+        'pixel': ['var(--app-font-serif)'],
         'pixel-old': ['var(--app-font-serif)'],
       }
     },
