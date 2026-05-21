@@ -239,4 +239,28 @@ mod tests {
 
         fs::remove_dir_all(app_dir).ok();
     }
+
+    #[test]
+    fn session_json_uses_frontend_field_names() {
+        let session = sample_session("json-contract", true, 25);
+        let json = serde_json::to_value(&session).expect("session should serialize");
+
+        assert!(json.get("startTime").is_some());
+        assert!(json.get("endTime").is_some());
+        assert!(json.get("start_time").is_none());
+        assert!(json.get("end_time").is_none());
+
+        let legacy_json = serde_json::json!({
+            "id": "legacy",
+            "task": "Legacy export",
+            "duration": 25,
+            "start_time": "2026-05-21T01:00:00Z",
+            "end_time": "2026-05-21T01:25:00Z",
+            "completed": true,
+            "tags": ["work"]
+        });
+        let legacy_session: FocusSession =
+            serde_json::from_value(legacy_json).expect("legacy snake_case export should import");
+        assert_eq!(legacy_session.start_time, "2026-05-21T01:00:00Z");
+    }
 }
