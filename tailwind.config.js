@@ -19,8 +19,8 @@ export default {
         'pixel-pink': 'var(--pixel-secondary)',
       },
       fontFamily: {
-        'pixel': ['"VT323"', 'monospace'],
-        'pixel-old': ['"Press Start 2P"', 'monospace'],
+        'pixel': ['var(--app-font-sans)'],
+        'pixel-old': ['var(--app-font-serif)'],
       }
     },
   },

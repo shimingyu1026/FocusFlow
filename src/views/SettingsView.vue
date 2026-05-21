@@ -1,10 +1,10 @@
 <template>
   <div class="h-full overflow-y-auto p-6">
-    <h2 class="text-xl font-pixel text-pixel-green mb-8 text-center">⚙️ 设置</h2>
+    <h2 class="text-xl font-pixel text-pixel-green mb-8 text-center">设置</h2>
 
     <!-- Appearance settings -->
     <div class="pixel-border p-6 mb-6 bg-pixel-bg">
-      <h3 class="text-sm font-pixel text-pixel-green mb-4">🎨 外观</h3>
+      <h3 class="text-sm font-pixel text-pixel-green mb-4">外观</h3>
 
       <div class="mb-5">
         <p class="font-pixel text-xs text-pixel-text-muted mb-3">主题模式</p>
@@ -45,7 +45,7 @@
 
     <!-- Sound settings -->
     <div class="pixel-border p-6 mb-6 bg-pixel-bg">
-      <h3 class="text-sm font-pixel text-pixel-green mb-4">🔊 声音</h3>
+      <h3 class="text-sm font-pixel text-pixel-green mb-4">声音</h3>
 
       <div class="flex items-center justify-between mb-4">
         <span class="font-pixel text-sm">启用提示音</span>
@@ -75,13 +75,13 @@
         @click="testSound"
         class="pixel-button pixel-border border-pixel-yellow text-pixel-yellow px-4 py-2 font-pixel text-xs hover:bg-pixel-yellow hover:text-black"
       >
-        🔔 测试音效
+        测试音效
       </button>
     </div>
 
     <!-- Default duration -->
     <div class="pixel-border p-6 mb-6 bg-pixel-bg">
-      <h3 class="text-sm font-pixel text-pixel-green mb-4">⏱️ 默认时长</h3>
+      <h3 class="text-sm font-pixel text-pixel-green mb-4">默认时长</h3>
 
       <div class="flex flex-wrap gap-3">
         <button
@@ -98,7 +98,7 @@
 
     <!-- Data management -->
     <div class="pixel-border p-6 mb-6 bg-pixel-bg">
-      <h3 class="text-sm font-pixel text-pixel-green mb-4">💾 数据管理</h3>
+      <h3 class="text-sm font-pixel text-pixel-green mb-4">数据管理</h3>
 
       <div class="flex gap-4 mb-4">
         <ExportButton />
@@ -109,7 +109,7 @@
         @click="handleClearData"
         class="pixel-button pixel-border border-pixel-pink text-pixel-pink px-6 py-3 font-pixel text-sm hover:bg-pixel-pink hover:text-black"
       >
-        🗑️ 清除所有数据
+        清除所有数据
       </button>
 
       <div v-if="storageLocations" class="mt-5 space-y-3 text-xs">
@@ -126,7 +126,7 @@
 
     <!-- Celebration settings -->
     <div class="pixel-border p-6 mb-6 bg-pixel-bg">
-      <h3 class="text-sm font-pixel text-pixel-green mb-4">🎉 完成动画</h3>
+      <h3 class="text-sm font-pixel text-pixel-green mb-4">完成动画</h3>
 
       <div class="flex flex-wrap gap-3">
         <button
@@ -150,7 +150,7 @@
       <h3 class="text-lg font-pixel text-pixel-green mb-2">FOCUS FLOW</h3>
       <p class="text-xs font-pixel text-pixel-text-muted mb-4">版本 0.2.0</p>
       <p class="text-xs font-pixel text-pixel-text-muted">复古像素风番茄钟</p>
-      <p class="text-xs font-pixel text-pixel-text-muted mt-2">保持专注，成就梦想 💪</p>
+      <p class="text-xs font-pixel text-pixel-text-muted mt-2">保持专注，持续前进。</p>
     </div>
   </div>
 </template>

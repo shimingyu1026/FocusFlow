@@ -1,27 +1,27 @@
 <template>
   <header class="app-header">
     <div class="app-header__brand">
-      <span class="app-header__dot"></span>
+      <span class="app-header__mark">FF</span>
       <div>
         <h1 class="app-header__title">FocusFlow</h1>
-        <p class="app-header__subtitle">Deep work timer for calm, high-quality focus.</p>
+        <p class="app-header__subtitle">Calm focus sessions, saved locally.</p>
       </div>
     </div>
 
-    <div class="app-header__badge">Desktop Pomodoro</div>
+    <div class="app-header__badge">Local Pomodoro</div>
   </header>
 </template>
 
 <style scoped>
 .app-header {
   display: flex;
-  height: 64px;
+  height: 72px;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(15, 23, 42, 0.16);
-  padding: 0 20px;
-  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--surface-line);
+  background: rgba(25, 24, 15, 0.86);
+  padding: 0 28px;
+  backdrop-filter: blur(18px);
 }
 
 .app-header__brand {
@@ -30,36 +30,42 @@
   gap: 14px;
 }
 
-.app-header__dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--pixel-primary), var(--pixel-secondary));
-  box-shadow: 0 0 18px var(--pixel-glow);
+.app-header__mark {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--surface-line-strong);
+  border-radius: 7px;
+  color: var(--pixel-text);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0;
 }
 
 .app-header__title {
   margin: 0;
   color: var(--pixel-text);
-  font-size: 1.55rem;
+  font-size: 1.08rem;
+  font-weight: 720;
   line-height: 1;
 }
 
 .app-header__subtitle {
   margin: 4px 0 0;
   color: var(--pixel-text-muted);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   line-height: 1;
 }
 
 .app-header__badge {
-  border: 1px solid rgba(20, 184, 166, 0.18);
-  border-radius: 999px;
-  background: rgba(20, 184, 166, 0.1);
+  border: 1px solid var(--surface-line-strong);
+  border-radius: 7px;
+  background: rgba(0, 0, 0, 0.16);
   color: var(--pixel-primary);
-  padding: 6px 10px;
+  padding: 8px 12px;
   font-size: 0.82rem;
-  letter-spacing: 0.04em;
 }
 
 @media (max-width: 420px) {

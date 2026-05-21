@@ -3,7 +3,7 @@
     @click="handleExport"
     class="pixel-button pixel-border border-pixel-green text-pixel-green px-6 py-3 font-pixel text-sm hover:bg-pixel-green hover:text-black"
   >
-    📤 导出数据
+    导出数据
   </button>
 </template>
 

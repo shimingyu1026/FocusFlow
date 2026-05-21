@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full items-center justify-center overflow-hidden px-5 py-4 sm:px-6 sm:py-5">
+  <div class="timer-view flex h-full items-center justify-center overflow-hidden px-5 py-4 sm:px-6 sm:py-5">
     <div class="mx-auto flex w-full max-w-4xl flex-col items-center justify-center gap-6 sm:gap-8">
       <TimerDisplay
         :is-running="isRunning"
@@ -24,7 +24,7 @@
 
       <!-- Focus tip -->
       <div v-if="isRunning" class="pixel-border p-4 bg-pixel-bg max-w-md text-center">
-        <p class="text-sm font-pixel text-pixel-green">💪 保持专注，你可以的！</p>
+        <p class="text-sm font-pixel text-pixel-green">保持专注。把这一轮做完。</p>
       </div>
     </div>
 
@@ -175,3 +175,14 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyPress)
 })
 </script>
+
+<style scoped>
+@media (max-width: 720px) {
+  .timer-view {
+    align-items: flex-start;
+    justify-content: flex-start;
+    overflow-y: auto;
+    padding: 12px;
+  }
+}
+</style>

@@ -1,6 +1,6 @@
 <template>
   <div class="pixel-border p-4 bg-pixel-bg">
-    <h3 class="text-sm font-pixel text-pixel-green mb-4">🏷️ 标签分布</h3>
+    <h3 class="text-sm font-pixel text-pixel-green mb-4">标签分布</h3>
     <div class="h-64">
       <canvas ref="chartCanvas"></canvas>
     </div>
@@ -69,7 +69,7 @@ function renderChart() {
           position: 'right',
           labels: {
             color: muted,
-            font: { family: '"Press Start 2P"', size: 10 }
+            font: { family: 'ui-sans-serif, system-ui, sans-serif', size: 12 }
           }
         }
       }

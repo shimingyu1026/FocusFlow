@@ -19,8 +19,8 @@
 
             <!-- Stats -->
             <div v-if="stats" class="text-xl text-white mb-6">
-              <p class="mb-2">⏱️ 专注时长: {{ stats.duration }} 分钟</p>
-              <p>🔥 今日完成: {{ stats.todayCount }} 次</p>
+              <p class="mb-2">专注时长: {{ stats.duration }} 分钟</p>
+              <p>今日完成: {{ stats.todayCount }} 次</p>
             </div>
 
             <!-- Motivational Message -->

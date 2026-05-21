@@ -71,14 +71,14 @@ async function renderChart() {
           grid: { color: `${textMuted}33` },
           ticks: {
             color: textMuted,
-            font: { family: '"Press Start 2P"' }
+            font: { family: 'ui-sans-serif, system-ui, sans-serif' }
           }
         },
         x: {
           grid: { display: false },
           ticks: {
             color: textMuted,
-            font: { family: '"Press Start 2P"', size: 8 }
+            font: { family: 'ui-sans-serif, system-ui, sans-serif', size: 11 }
           }
         }
       }

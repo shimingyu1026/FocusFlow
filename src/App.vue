@@ -1,6 +1,6 @@
 <template>
   <div ref="viewportRef" class="app-fit-viewport">
-    <div v-if="isTimerRoute" class="app-fit-shell" :style="shellStyle">
+    <div v-if="shouldFitTimer" class="app-fit-shell" :style="shellStyle">
       <div ref="contentRef" class="app-fit-content" :style="contentStyle">
         <div class="app-shell">
           <AppHeader />
@@ -41,9 +41,10 @@ let contentObserver: ResizeObserver | null = null
 let measureFrame = 0
 
 const isTimerRoute = computed(() => route.name === 'timer')
+const shouldFitTimer = computed(() => isTimerRoute.value && viewportSize.value.width > 720)
 
 const appScale = computed(() => {
-  if (!isTimerRoute.value) {
+  if (!shouldFitTimer.value) {
     return 1
   }
 
@@ -138,6 +139,12 @@ watch(() => route.fullPath, async () => {
   observeContent()
   scheduleMeasure()
 })
+
+watch(shouldFitTimer, async () => {
+  await nextTick()
+  observeContent()
+  scheduleMeasure()
+}, { immediate: true })
 
 onUnmounted(() => {
   cancelAnimationFrame(measureFrame)

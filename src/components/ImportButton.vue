@@ -4,7 +4,7 @@
       @click="handleImport"
       class="pixel-button pixel-border border-pixel-blue text-pixel-blue px-6 py-3 font-pixel text-sm hover:bg-pixel-blue hover:text-black"
     >
-      📥 导入数据
+      导入数据
     </button>
     <input
       ref="fileInput"
